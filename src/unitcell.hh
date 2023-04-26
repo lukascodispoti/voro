@@ -60,7 +60,7 @@ class unitcell {
 		}
 		void draw_domain_pov(FILE *fp=stdout);
 		bool intersects_image(double dx,double dy,double dz,double &vol);
-		void images(std::vector<int> &vi,std::vector<double> &vd);
+		void images(std::vector<int64_t> &vi,std::vector<double> &vd);
 	protected:
 		/** The maximum y-coordinate that could possibly cut the
 		 * computed unit Voronoi cell. */
@@ -69,9 +69,9 @@ class unitcell {
 		 * computed unit Voronoi cell. */
 		double max_uv_z;
 	private:
-		inline void unit_voro_apply(int i,int j,int k);
-		bool unit_voro_intersect(int l);
-		inline bool unit_voro_test(int i,int j,int k);
+		inline void unit_voro_apply(int64_t i,int64_t j,int64_t k);
+		bool unit_voro_intersect(int64_t l);
+		inline bool unit_voro_test(int64_t i,int64_t j,int64_t k);
 };
 
 }

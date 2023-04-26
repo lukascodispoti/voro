@@ -45,62 +45,62 @@ class container_periodic_base : public unitcell, public voro_base {
 		const double max_len_sq;
 		/** The lower y index (inclusive) of the primary domain within
 		 * the block structure. */
-		int ey;
+		int64_t ey;
 		/** The lower z index (inclusive) of the primary domain within
 		 * the block structure. */
-		int ez;
+		int64_t ez;
 		/** The upper y index (exclusive) of the primary domain within
 		 * the block structure. */
-		int wy;
+		int64_t wy;
 		/** The upper z index (exclusive) of the primary domain within
 		 * the block structure. */
-		int wz;
+		int64_t wz;
 		/** The total size of the block structure (including images) in
 		 * the y direction. */
-		int oy;
+		int64_t oy;
 		/** The total size of the block structure (including images) in
 		 * the z direction. */
-		int oz;
+		int64_t oz;
 		/** The total number of blocks. */
-		int oxyz;
+		int64_t oxyz;
 		/** This array holds the numerical IDs of each particle in each
 		 * computational box. */
-		int **id;
+		int64_t **id;
 		/** A two dimensional array holding particle positions. For the
 		 * derived container_poly class, this also holds particle
 		 * radii. */
 		double **p;
 		/** This array holds the number of particles within each
 		 * computational box of the container. */
-		int *co;
+		int64_t *co;
 		/** This array holds the maximum amount of particle memory for
 		 * each computational box of the container. If the number of
 		 * particles in a particular box ever approaches this limit,
 		 * more is allocated using the add_particle_memory() function.
 		 */
-		int *mem;
+		int64_t *mem;
 		/** An array holding information about periodic image
 		 * construction at a given location. */
 		char *img;
 		/** The initial amount of memory to allocate for particles
 		 * for each block. */
-		const int init_mem;
+		const int64_t init_mem;
 		/** The amount of memory in the array structure for each
 		 * particle. This is set to 3 when the basic class is
 		 * initialized, so that the array holds (x,y,z) positions. If
 		 * the container class is initialized as part of the derived
 		 * class container_poly, then this is set to 4, to also hold
 		 * the particle radii. */
-		const int ps;
+		const int64_t ps;
 		container_periodic_base(double bx_,double bxy_,double by_,double bxz_,double byz_,double bz_,
-				int nx_,int ny_,int nz_,int init_mem_,int ps);
+				int64_t nx_,int64_t ny_,int64_t nz_,int64_t init_mem_,int64_t ps);
 		~container_periodic_base();
 		/** Prints all particles in the container, including those that
 		 * have been constructed in image blocks. */
 		inline void print_all_particles() {
-			int ijk,q;
+			int64_t ijk,q;
 			for(ijk=0;ijk<oxyz;ijk++) for(q=0;q<co[ijk];q++)
-				printf("%d %g %g %g\n",id[ijk][q],p[ijk][ps*q],p[ijk][ps*q+1],p[ijk][ps*q+2]);
+				printf("%zu %g %g %g\n",id[ijk][q],p[ijk][ps*q],p[ijk][ps*q+1],p[ijk][ps*q+2]);
 		}
 		void region_count();
 		/** Initializes the Voronoi cell prior to a compute_cell
@@ -122,7 +122,7 @@ class container_periodic_base : public unitcell, public voro_base {
 		 * \return False if the plane cuts applied by walls completely
 		 * removed the cell, true otherwise. */
 		template<class v_cell>
-		inline bool initialize_voronoicell(v_cell &c,int ijk,int q,int ci,int cj,int ck,int &i,int &j,int &k,double &x,double &y,double &z,int &disp) {
+		inline bool initialize_voronoicell(v_cell &c,int64_t ijk,int64_t q,int64_t ci,int64_t cj,int64_t ck,int64_t &i,int64_t &j,int64_t &k,double &x,double &y,double &z,int64_t &disp) {
 			c=unit_voro;
 			double *pp=p[ijk]+ps*q;
 			x=*(pp++);y=*(pp++);z=*pp;
@@ -140,7 +140,7 @@ class container_periodic_base : public unitcell, public voro_base {
 		 * \param[out] disp a block displacement used internally by the
 		 *		    find_voronoi_cell routine (but not needed
 		 *		    in this instance.) */
-		inline void initialize_search(int ci,int cj,int ck,int ijk,int &i,int &j,int &k,int &disp) {
+		inline void initialize_search(int64_t ci,int64_t cj,int64_t ck,int64_t ijk,int64_t &i,int64_t &j,int64_t &k,int64_t &disp) {
 			i=nx;j=ey;k=ez;
 		}
 		/** Returns the position of a particle currently being computed
@@ -169,18 +169,18 @@ class container_periodic_base : public unitcell, public voro_base {
 		 * 		    find_voronoi_cell and compute_cell routines
 		 * 		    (but not needed in this instance.)
 		 * \return The block index. */
-		inline int region_index(int ci,int cj,int ck,int ei,int ej,int ek,double &qx,double &qy,double &qz,int &disp) {
-			int qi=ci+(ei-nx),qj=cj+(ej-ey),qk=ck+(ek-ez);
-			int iv(step_div(qi,nx));if(iv!=0) {qx=iv*bx;qi-=nx*iv;} else qx=0;
+		inline int64_t region_index(int64_t ci,int64_t cj,int64_t ck,int64_t ei,int64_t ej,int64_t ek,double &qx,double &qy,double &qz,int64_t &disp) {
+			int64_t qi=ci+(ei-nx),qj=cj+(ej-ey),qk=ck+(ek-ez);
+			int64_t iv(step_div(qi,nx));if(iv!=0) {qx=iv*bx;qi-=nx*iv;} else qx=0;
 			create_periodic_image(qi,qj,qk);
 			return qi+nx*(qj+oy*qk);
 		}
 		void create_all_images();
 		void check_compartmentalized();
 	protected:
-		void add_particle_memory(int i);
-		void put_locate_block(int &ijk,double &x,double &y,double &z);
-		void put_locate_block(int &ijk,double &x,double &y,double &z,int &ai,int &aj,int &ak);
+		void add_particle_memory(int64_t i);
+		void put_locate_block(int64_t &ijk,double &x,double &y,double &z);
+		void put_locate_block(int64_t &ijk,double &x,double &y,double &z,int64_t &ai,int64_t &aj,int64_t &ak);
 		/** Creates particles within an image block by copying them
 		 * from the primary domain and shifting them. If the given
 		 * block is aligned with the primary domain in the z-direction,
@@ -191,17 +191,17 @@ class container_periodic_base : public unitcell, public voro_base {
 		 * particles from up to four primary blocks.
 		 * \param[in] (di,dj,dk) the coordinates of the image block to
 		 *                       create. */
-		inline void create_periodic_image(int di,int dj,int dk) {
+		inline void create_periodic_image(int64_t di,int64_t dj,int64_t dk) {
 			if(di<0||di>=nx||dj<0||dj>=oy||dk<0||dk>=oz)
 				voro_fatal_error("Constructing periodic image for nonexistent point",VOROPP_INTERNAL_ERROR);
 			if(dk>=ez&&dk<wz) {
 				if(dj<ey||dj>=wy) create_side_image(di,dj,dk);
 			} else create_vertical_image(di,dj,dk);
 		}
-		void create_side_image(int di,int dj,int dk);
-		void create_vertical_image(int di,int dj,int dk);
-		void put_image(int reg,int fijk,int l,double dx,double dy,double dz);
-		inline void remap(int &ai,int &aj,int &ak,int &ci,int &cj,int &ck,double &x,double &y,double &z,int &ijk);
+		void create_side_image(int64_t di,int64_t dj,int64_t dk);
+		void create_vertical_image(int64_t di,int64_t dj,int64_t dk);
+		void put_image(int64_t reg,int64_t fijk,int64_t l,double dx,double dy,double dz);
+		inline void remap(int64_t &ai,int64_t &aj,int64_t &ak,int64_t &ci,int64_t &cj,int64_t &ck,double &x,double &y,double &z,int64_t &ijk);
 };
 
 /** \brief Extension of the container_periodic_base class for computing regular
@@ -213,11 +213,11 @@ class container_periodic_base : public unitcell, public voro_base {
 class container_periodic : public container_periodic_base, public radius_mono {
 	public:
 		container_periodic(double bx_,double bxy_,double by_,double bxz_,double byz_,double bz_,
-				int nx_,int ny_,int nz_,int init_mem_);
+				int64_t nx_,int64_t ny_,int64_t nz_,int64_t init_mem_);
 		void clear();
-		void put(int n,double x,double y,double z);
-		void put(int n,double x,double y,double z,int &ai,int &aj,int &ak);
-		void put(particle_order &vo,int n,double x,double y,double z);
+		void put(int64_t n,double x,double y,double z);
+		void put(int64_t n,double x,double y,double z,int64_t &ai,int64_t &aj,int64_t &ak);
+		void put(particle_order &vo,int64_t n,double x,double y,double z);
 		void import(FILE *fp=stdin);
 		void import(particle_order &vo,FILE *fp=stdin);
 		/** Imports a list of particles from an open file stream into
@@ -359,7 +359,7 @@ class container_periodic : public container_periodic_base, public radius_mono {
 		 * \param[in] fp a file handle to write to. */
 		template<class c_loop>
 		void print_custom(c_loop &vl,const char *format,FILE *fp) {
-			int ijk,q;double *pp;
+			int64_t ijk,q;double *pp;
 			if(contains_neighbor(format)) {
 				voronoicell_neighbor c(*this);
 				if(vl.start()) do if(compute_cell(c,vl)) {
@@ -376,7 +376,7 @@ class container_periodic : public container_periodic_base, public radius_mono {
 		}
 		void print_custom(const char *format,FILE *fp=stdout);
 		void print_custom(const char *format,const char *filename);
-		bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid);
+		bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int64_t &pid);
 		/** Computes the Voronoi cell for a particle currently being
 		 * referenced by a loop class.
 		 * \param[out] c a Voronoi cell class in which to store the
@@ -398,8 +398,8 @@ class container_periodic : public container_periodic_base, public radius_mono {
 		 * computed because it was removed entirely for some reason,
 		 * then the routine returns false. */
 		template<class v_cell>
-		inline bool compute_cell(v_cell &c,int ijk,int q) {
-			int k(ijk/(nx*oy)),ijkt(ijk-(nx*oy)*k),j(ijkt/nx),i(ijkt-j*nx);
+		inline bool compute_cell(v_cell &c,int64_t ijk,int64_t q) {
+			int64_t k(ijk/(nx*oy)),ijkt(ijk-(nx*oy)*k),j(ijkt/nx),i(ijkt-j*nx);
 			return vc.compute_cell(c,ijk,q,i,j,k);
 		}
 		/** Computes the Voronoi cell for a ghost particle at a given
@@ -412,7 +412,7 @@ class container_periodic : public container_periodic_base, public radius_mono {
 		 * condition, then the routine returns false. */
 		template<class v_cell>
 		inline bool compute_ghost_cell(v_cell &c,double x,double y,double z) {
-			int ijk;
+			int64_t ijk;
 			put_locate_block(ijk,x,y,z);
 			double *pp=p[ijk]+3*co[ijk]++;
 			*(pp++)=x;*(pp++)=y;*(pp++)=z;
@@ -434,11 +434,11 @@ class container_periodic : public container_periodic_base, public radius_mono {
 class container_periodic_poly : public container_periodic_base, public radius_poly {
 	public:
 		container_periodic_poly(double bx_,double bxy_,double by_,double bxz_,double byz_,double bz_,
-				int nx_,int ny_,int nz_,int init_mem_);
+				int64_t nx_,int64_t ny_,int64_t nz_,int64_t init_mem_);
 		void clear();
-		void put(int n,double x,double y,double z,double r);
-		void put(int n,double x,double y,double z,double r,int &ai,int &aj,int &ak);
-		void put(particle_order &vo,int n,double x,double y,double z,double r);
+		void put(int64_t n,double x,double y,double z,double r);
+		void put(int64_t n,double x,double y,double z,double r,int64_t &ai,int64_t &aj,int64_t &ak);
+		void put(particle_order &vo,int64_t n,double x,double y,double z,double r);
 		void import(FILE *fp=stdin);
 		void import(particle_order &vo,FILE *fp=stdin);
 		/** Imports a list of particles from an open file stream into
@@ -582,7 +582,7 @@ class container_periodic_poly : public container_periodic_base, public radius_po
 		 * \param[in] fp a file handle to write to. */
 		template<class c_loop>
 		void print_custom(c_loop &vl,const char *format,FILE *fp) {
-			int ijk,q;double *pp;
+			int64_t ijk,q;double *pp;
 			if(contains_neighbor(format)) {
 				voronoicell_neighbor c(*this);
 				if(vl.start()) do if(compute_cell(c,vl)) {
@@ -618,8 +618,8 @@ class container_periodic_poly : public container_periodic_base, public radius_po
 		 * computed because it was removed entirely for some reason,
 		 * then the routine returns false. */
 		template<class v_cell>
-		inline bool compute_cell(v_cell &c,int ijk,int q) {
-			int k(ijk/(nx*oy)),ijkt(ijk-(nx*oy)*k),j(ijkt/nx),i(ijkt-j*nx);
+		inline bool compute_cell(v_cell &c,int64_t ijk,int64_t q) {
+			int64_t k(ijk/(nx*oy)),ijkt(ijk-(nx*oy)*k),j(ijkt/nx),i(ijkt-j*nx);
 			return vc.compute_cell(c,ijk,q,i,j,k);
 		}
 		/** Computes the Voronoi cell for a ghost particle at a given
@@ -633,7 +633,7 @@ class container_periodic_poly : public container_periodic_base, public radius_po
 		 * condition, then the routine returns false. */
 		template<class v_cell>
 		inline bool compute_ghost_cell(v_cell &c,double x,double y,double z,double r) {
-			int ijk;
+			int64_t ijk;
 			put_locate_block(ijk,x,y,z);
 			double *pp=p[ijk]+4*co[ijk]++,tm=max_radius;
 			*(pp++)=x;*(pp++)=y;*(pp++)=z;*pp=r;
@@ -644,7 +644,7 @@ class container_periodic_poly : public container_periodic_base, public radius_po
 		}
 		void print_custom(const char *format,FILE *fp=stdout);
 		void print_custom(const char *format,const char *filename);
-		bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid);
+		bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int64_t &pid);
 	private:
 		voro_compute<container_periodic_poly> vc;
 		friend class voro_compute<container_periodic_poly>;

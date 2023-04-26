@@ -26,7 +26,7 @@ namespace voro {
 unitcell::unitcell(double bx_,double bxy_,double by_,double bxz_,double byz_,double bz_)
 	: bx(bx_), bxy(bxy_), by(by_), bxz(bxz_), byz(byz_), bz(bz_),
 	unit_voro(max_unit_voro_shells*max_unit_voro_shells*4*(bx*bx+by*by+bz*bz)) {
-	int i,j,l=1;
+	int64_t i,j,l=1;
 
 	// Initialize the Voronoi cell to be a very large rectangular box
 	const double ucx=max_unit_voro_shells*bx,ucy=max_unit_voro_shells*by,ucz=max_unit_voro_shells*bz;
@@ -87,7 +87,7 @@ unitcell::unitcell(double bx_,double bxy_,double by_,double bxz_,double byz_,dou
 /** Applies a pair of opposing plane cuts from a periodic image point
  * to the unit Voronoi cell.
  * \param[in] (i,j,k) the index of the periodic image to consider. */
-inline void unitcell::unit_voro_apply(int i,int j,int k) {
+inline void unitcell::unit_voro_apply(int64_t i,int64_t j,int64_t k) {
 	double x=i*bx+j*bxy+k*bxz,y=j*by+k*byz,z=k*bz;
 	unit_voro.plane(x,y,z);
 	unit_voro.plane(-x,-y,-z);
@@ -120,10 +120,10 @@ bool unitcell::intersects_image(double dx,double dy,double dz,double &vol) {
  *                centered in the middle of the primary domain.
  * \param[out] vd a vector containing the fraction of the Voronoi cell volume
  *                within each corresponding image listed in vi. */
-void unitcell::images(std::vector<int> &vi,std::vector<double> &vd) {
-	const int ms2=max_unit_voro_shells*2+1,mss=ms2*ms2*ms2;
+void unitcell::images(std::vector<int64_t> &vi,std::vector<double> &vd) {
+	const int64_t ms2=max_unit_voro_shells*2+1,mss=ms2*ms2*ms2;
 	bool *a=new bool[mss],*ac=a+max_unit_voro_shells*(1+ms2*(1+ms2)),*ap=a;
-	int i,j,k;
+	int64_t i,j,k;
 	double vol;
 
 	// Initialize mask
@@ -132,7 +132,7 @@ void unitcell::images(std::vector<int> &vi,std::vector<double> &vd) {
 	while(ap<a+mss) *(ap++)=true;
 
 	// Set up the queue and add (0,0,0) image to it
-	std::queue<int> q;
+	std::queue<int64_t> q;
 	q.push(0);q.push(0);q.push(0);
 
 	while(!q.empty()) {
@@ -171,8 +171,8 @@ void unitcell::images(std::vector<int> &vi,std::vector<double> &vd) {
  * unit cell.
  * \param[in] l the index of the shell to consider.
  * \return True if a point in the shell cuts the cell, false otherwise. */
-bool unitcell::unit_voro_intersect(int l) {
-	int i,j;
+bool unitcell::unit_voro_intersect(int64_t l) {
+	int64_t i,j;
 	if(unit_voro_test(l,0,0)) return true;
 	for(i=1;i<l;i++) {
 		if(unit_voro_test(l,i,0)) return true;
@@ -193,7 +193,7 @@ bool unitcell::unit_voro_intersect(int l) {
  * unit Voronoi cell.
  * \param[in] (i,j,k) the index of the periodic image to consider.
  * \return True if the image cuts the cell, false otherwise. */
-inline bool unitcell::unit_voro_test(int i,int j,int k) {
+inline bool unitcell::unit_voro_test(int64_t i,int64_t j,int64_t k) {
 	double x=i*bx+j*bxy+k*bxz,y=j*by+k*byz,z=k*bz;
 	double rsq=x*x+y*y+z*z;
 	return unit_voro.plane_intersects(x,y,z,rsq);

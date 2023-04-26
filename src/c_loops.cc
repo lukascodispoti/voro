@@ -41,7 +41,7 @@ void c_loop_subset::setup_sphere(double vx,double vy,double vz,double r,bool bou
  * \param[in] (ak_,bk_) the subgrid range in the z-direction, inclusive of both
  *                      ends.
  * \return True if there is any valid point to loop over, false otherwise. */
-void c_loop_subset::setup_intbox(int ai_,int bi_,int aj_,int bj_,int ak_,int bk_) {
+void c_loop_subset::setup_intbox(int64_t ai_,int64_t bi_,int64_t aj_,int64_t bj_,int64_t ak_,int64_t bk_) {
 	ai=ai_;bi=bi_;aj=aj_;bj=bj_;ak=ak_;bk=bk_;
 	mode=no_check;
 	setup_common();
@@ -141,7 +141,7 @@ bool c_loop_subset::next_block() {
 
 /** Extends the memory available for storing the ordering. */
 void particle_order::add_ordering_memory() {
-	int *no=new int[size<<2],*nop=no,*opp=o;
+	int64_t *no=new int64_t[size<<2],*nop=no,*opp=o;
 	while(opp<op) *(nop++)=*(opp++);
 	delete [] o;
 	size<<=1;o=no;op=nop;

@@ -27,7 +27,7 @@ class radius_mono {
 		 * given particle to initialize any required constants.
 		 * \param[in] ijk the block that the particle is within.
 		 * \param[in] s the index of the particle within the block. */
-		inline void r_init(int ijk,int s) {}
+		inline void r_init(int64_t ijk,int64_t s) {}
 		/** Sets a required constant to be used when carrying out a
 		 * plane bounds check. */
 		inline void r_prime(double rv) {}
@@ -52,14 +52,14 @@ class radius_mono {
 		 * \param[in] ijk the block that the particle is within.
 		 * \param[in] q the index of the particle within the block.
 		 * \return The value with the radius squared subtracted. */
-		inline double r_current_sub(double rs,int ijk,int q) {return rs;}
+		inline double r_current_sub(double rs,int64_t ijk,int64_t q) {return rs;}
 		/** Scales a plane displacement prior to use in the plane cutting
 		 * algorithm.
 		 * \param[in] rs the initial plane displacement.
 		 * \param[in] ijk the block that the particle is within.
 		 * \param[in] q the index of the particle within the block.
 		 * \return The scaled plane displacement. */
-		inline double r_scale(double rs,int ijk,int q) {return rs;}
+		inline double r_scale(double rs,int64_t ijk,int64_t q) {return rs;}
 		/** Scales a plane displacement prior to use in the plane
 		 * cutting algorithm, and also checks if it could possibly cut
 		 * the cell.
@@ -70,7 +70,7 @@ class radius_mono {
 		 * \param[in] q the index of the particle within the block.
 		 * \return True if the cell could possibly cut the cell, false
 		 * otherwise. */
-		inline bool r_scale_check(double &rs,double mrs,int ijk,int q) {return rs<mrs;}
+		inline bool r_scale_check(double &rs,double mrs,int64_t ijk,int64_t q) {return rs<mrs;}
 };
 
 /**  \brief Class containing all of the routines that are specific to computing
@@ -95,7 +95,7 @@ class radius_poly {
 		 * given particle to initialize any required constants.
 		 * \param[in] ijk the block that the particle is within.
 		 * \param[in] s the index of the particle within the block. */
-		inline void r_init(int ijk,int s) {
+		inline void r_init(int64_t ijk,int64_t s) {
 			r_rad=ppr[ijk][4*s+3]*ppr[ijk][4*s+3];
 			r_mul=r_rad-max_radius*max_radius;
 		}
@@ -123,7 +123,7 @@ class radius_poly {
 		 * \param[in] ijk the block that the particle is within.
 		 * \param[in] q the index of the particle within the block.
 		 * \return The value with the radius squared subtracted. */
-		inline double r_current_sub(double rs,int ijk,int q) {
+		inline double r_current_sub(double rs,int64_t ijk,int64_t q) {
 			return rs-ppr[ijk][4*q+3]*ppr[ijk][4*q+3];
 		}
 		/** Scales a plane displacement prior to use in the plane cutting
@@ -132,7 +132,7 @@ class radius_poly {
 		 * \param[in] ijk the block that the particle is within.
 		 * \param[in] q the index of the particle within the block.
 		 * \return The scaled plane displacement. */
-		inline double r_scale(double rs,int ijk,int q) {
+		inline double r_scale(double rs,int64_t ijk,int64_t q) {
 			return rs+r_rad-ppr[ijk][4*q+3]*ppr[ijk][4*q+3];
 		}
 		/** Scales a plane displacement prior to use in the plane
@@ -145,7 +145,7 @@ class radius_poly {
 		 * \param[in] q the index of the particle within the block.
 		 * \return True if the cell could possibly cut the cell, false
 		 * otherwise. */
-		inline bool r_scale_check(double &rs,double mrs,int ijk,int q) {
+		inline bool r_scale_check(double &rs,double mrs,int64_t ijk,int64_t q) {
 			double trs=rs;
 			rs+=r_rad-ppr[ijk][4*q+3]*ppr[ijk][4*q+3];
 			return rs<sqrt(mrs*trs);

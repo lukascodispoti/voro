@@ -56,20 +56,20 @@ namespace voro {
 # constructed for each. This parameter sets is set to half the number of
 # subregions that the block is divided into. */
 EOF
-print W "const int wl_hgrid=$hr;\n";
+print W "const int64_t wl_hgrid=$hr;\n";
 print W <<EOF;
 /** The number of subregions that a block is subdivided into, which is twice
 the value of hgrid. */
 EOF
-print W "const int wl_fgrid=$r;\n";
+print W "const int64_t wl_fgrid=$r;\n";
 print W <<EOF;
 /** The total number of worklists, set to the cube of hgrid. */
 EOF
-printf W "const int wl_hgridcu=%d;\n",$hr*$hr*$hr;
+printf W "const int64_t wl_hgridcu=%d;\n",$hr*$hr*$hr;
 print W <<EOF;
 /** The number of elements in each worklist. */
 EOF
-printf W "const int wl_seq_length=%d;\n",$ls+1;
+printf W "const int64_t wl_seq_length=%d;\n",$ls+1;
 print W <<EOF;
 
 }
@@ -94,7 +94,7 @@ print W <<EOF;
  * intended to be edited by hand. */
 
 EOF
-printf W "const unsigned int voro_base::wl[wl_seq_length*wl_hgridcu]={\n";
+printf W "const uint64_t voro_base::wl[wl_seq_length*wl_hgridcu]={\n";
 
 # Now create a worklist for each subregion
 for($kk=0;$kk<$hr;$kk++) {

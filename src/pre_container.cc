@@ -27,12 +27,12 @@ namespace voro {
  * \param[in] ps_ the number of floating point entries to store for each
  *                particle. */
 pre_container_base::pre_container_base(double ax_,double bx_,double ay_,double by_,double az_,double bz_,
-	bool xperiodic_,bool yperiodic_,bool zperiodic_,int ps_) :
+	bool xperiodic_,bool yperiodic_,bool zperiodic_,int64_t ps_) :
 	ax(ax_), bx(bx_), ay(ay_), by(by_), az(az_), bz(bz_),
 	xperiodic(xperiodic_), yperiodic(yperiodic_), zperiodic(zperiodic_), ps(ps_),
-	index_sz(init_chunk_size), pre_id(new int*[index_sz]), end_id(pre_id),
+	index_sz(init_chunk_size), pre_id(new int64_t*[index_sz]), end_id(pre_id),
 	pre_p(new double*[index_sz]), end_p(pre_p) {
-		ch_id=*end_id=new int[pre_container_chunk_size];
+		ch_id=*end_id=new int64_t[pre_container_chunk_size];
 		l_id=end_id+index_sz;e_id=ch_id+pre_container_chunk_size;
 		ch_p=*end_p=new double[ps*pre_container_chunk_size];
 }
@@ -54,12 +54,12 @@ pre_container_base::~pre_container_base() {
 /** Makes a guess at the optimal grid of blocks to use, computing in
  * a way that
  * \param[out] (nx,ny,nz) the number of blocks to use. */
-void pre_container_base::guess_optimal(int &nx,int &ny,int &nz) {
+void pre_container_base::guess_optimal(int64_t &nx,int64_t &ny,int64_t &nz) {
 	double dx=bx-ax,dy=by-ay,dz=bz-az;
 	double ilscale=pow(total_particles()/(optimal_particles*dx*dy*dz),1/3.0);
-	nx=int(dx*ilscale+1);
-	ny=int(dy*ilscale+1);
-	nz=int(dz*ilscale+1);
+	nx=int64_t(dx*ilscale+1);
+	ny=int64_t(dy*ilscale+1);
+	nz=int64_t(dz*ilscale+1);
 }
 
 /** Stores a particle ID and position, allocating a new memory chunk if
@@ -68,7 +68,7 @@ void pre_container_base::guess_optimal(int &nx,int &ny,int &nz) {
  * bounds. If the particle is out of bounds, it is not stored.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void pre_container::put(int n,double x,double y,double z) {
+void pre_container::put(int64_t n,double x,double y,double z) {
 	if((xperiodic||(x>=ax&&x<=bx))&&(yperiodic||(y>=ay&&y<=by))&&(zperiodic||(z>=az&&z<=bz))) {
 		if(ch_id==e_id) new_chunk();
 		*(ch_id++)=n;
@@ -83,7 +83,7 @@ void pre_container::put(int n,double x,double y,double z) {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void pre_container_poly::put(int n,double x,double y,double z,double r) {
+void pre_container_poly::put(int64_t n,double x,double y,double z,double r) {
 	if((xperiodic||(x>=ax&&x<=bx))&&(yperiodic||(y>=ay&&y<=by))&&(zperiodic||(z>=az&&z<=bz))) {
 		if(ch_id==e_id) new_chunk();
 		*(ch_id++)=n;
@@ -97,7 +97,7 @@ void pre_container_poly::put(int n,double x,double y,double z,double r) {
 /** Transfers the particles stored within the class to a container class.
  * \param[in] con the container class to transfer to. */
 void pre_container::setup(container &con) {
-	int **c_id=pre_id,*idp,*ide,n;
+	int64_t **c_id=pre_id,*idp,*ide,n;
 	double **c_p=pre_p,*pp,x,y,z;
 	while(c_id<end_id) {
 		idp=*(c_id++);ide=idp+pre_container_chunk_size;
@@ -118,7 +118,7 @@ void pre_container::setup(container &con) {
 /** Transfers the particles stored within the class to a container_poly class.
  * \param[in] con the container_poly class to transfer to. */
 void pre_container_poly::setup(container_poly &con) {
-	int **c_id=pre_id,*idp,*ide,n;
+	int64_t **c_id=pre_id,*idp,*ide,n;
 	double **c_p=pre_p,*pp,x,y,z,r;
 	while(c_id<end_id) {
 		idp=*(c_id++);ide=idp+pre_container_chunk_size;
@@ -141,7 +141,7 @@ void pre_container_poly::setup(container_poly &con) {
  * \param[in] vo the ordering class to use.
  * \param[in] con the container class to transfer to. */
 void pre_container::setup(particle_order &vo,container &con) {
-	int **c_id=pre_id,*idp,*ide,n;
+	int64_t **c_id=pre_id,*idp,*ide,n;
 	double **c_p=pre_p,*pp,x,y,z;
 	while(c_id<end_id) {
 		idp=*(c_id++);ide=idp+pre_container_chunk_size;
@@ -164,7 +164,7 @@ void pre_container::setup(particle_order &vo,container &con) {
  * \param[in] vo the ordering class to use.
  * \param[in] con the container_poly class to transfer to. */
 void pre_container_poly::setup(particle_order &vo,container_poly &con) {
-	int **c_id=pre_id,*idp,*ide,n;
+	int64_t **c_id=pre_id,*idp,*ide,n;
 	double **c_p=pre_p,*pp,x,y,z,r;
 	while(c_id<end_id) {
 		idp=*(c_id++);ide=idp+pre_container_chunk_size;
@@ -188,7 +188,7 @@ void pre_container_poly::setup(particle_order &vo,container_poly &con) {
  * causes a fatal error.
  * \param[in] fp the file handle to read from. */
 void pre_container::import(FILE *fp) {
-	int i,j;
+	int64_t i,j;
 	double x,y,z;
 	while((j=fscanf(fp,"%d %lg %lg %lg",&i,&x,&y,&z))==4) put(i,x,y,z);
 	if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -200,7 +200,7 @@ void pre_container::import(FILE *fp) {
  * successfully read, then the routine causes a fatal error.
  * \param[in] fp the file handle to read from. */
 void pre_container_poly::import(FILE *fp) {
-	int i,j;
+	int64_t i,j;
 	double x,y,z,r;
 	while((j=fscanf(fp,"%d %lg %lg %lg %lg",&i,&x,&y,&z,&r))==5) put(i,x,y,z,r);
 	if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -210,7 +210,7 @@ void pre_container_poly::import(FILE *fp) {
 void pre_container_base::new_chunk() {
 	end_id++;end_p++;
 	if(end_id==l_id) extend_chunk_index();
-	ch_id=*end_id=new int[pre_container_chunk_size];
+	ch_id=*end_id=new int64_t[pre_container_chunk_size];
 	e_id=ch_id+pre_container_chunk_size;
 	ch_p=*end_p=new double[ps*pre_container_chunk_size];
 }
@@ -223,7 +223,7 @@ void pre_container_base::extend_chunk_index() {
 #if VOROPP_VERBOSE >=2
 	fprintf(stderr,"Pre-container chunk index scaled up to %d\n",index_sz);
 #endif
-	int **n_id=new int*[index_sz],**p_id=n_id,**c_id=pre_id;
+	int64_t **n_id=new int64_t*[index_sz],**p_id=n_id,**c_id=pre_id;
 	double **n_p=new double*[index_sz],**p_p=n_p,**c_p=pre_p;
 	while(c_id<end_id) {
 		*(p_id++)=*(c_id++);

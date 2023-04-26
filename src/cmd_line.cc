@@ -20,7 +20,7 @@ enum blocks_mode {
 
 // A maximum allowed number of regions, to prevent enormous amounts of memory
 // being allocated
-const int max_regions=16777216;
+const int64_t max_regions=16777216;
 
 // This message gets displayed if the user requests the help flag
 void help_message() {
@@ -123,8 +123,8 @@ void error_message() {
 // Carries out the Voronoi computation and outputs the results to the requested
 // files
 template<class c_loop,class c_class>
-void cmd_line_output(c_loop &vl,c_class &con,const char* format,FILE* outfile,FILE* gnu_file,FILE* povp_file,FILE* povv_file,bool verbose,double &vol,int &vcc,int &tp) {
-	int pid,ps=con.ps;double x,y,z,r;
+void cmd_line_output(c_loop &vl,c_class &con,const char* format,FILE* outfile,FILE* gnu_file,FILE* povp_file,FILE* povv_file,bool verbose,double &vol,int64_t &vcc,int64_t &tp) {
+	int64_t pid,ps=con.ps;double x,y,z,r;
 	if(con.contains_neighbor(format)) {
 		voronoicell_neighbor c(con);
 		if(vl.start()) do if(con.compute_cell(c,vl)) {
@@ -164,7 +164,7 @@ void cmd_line_output(c_loop &vl,c_class &con,const char* format,FILE* outfile,FI
 }
 
 int main(int argc,char **argv) {
-	int i=1,j=-7,custom_output=0,nx,ny,nz,init_mem(8);
+	int64_t i=1,j=-7,custom_output=0,nx,ny,nz,init_mem(8);
 	double ls=0;
 	blocks_mode bm=none;
 	bool gnuplot_output=false,povp_output=false,povv_output=false,polydisperse=false;
@@ -379,7 +379,7 @@ int main(int argc,char **argv) {
 			nyf=(by-ay)*ls+1;
 			nzf=(bz-az)*ls+1;
 
-			nx=int(nxf);ny=int(nyf);nz=int(nzf);
+			nx=int64_t(nxf);ny=int64_t(nyf);nz=int64_t(nzf);
 		} else {
 			nxf=nx;nyf=ny;nzf=nz;
 		}
@@ -398,7 +398,7 @@ int main(int argc,char **argv) {
 	}
 
 	// Check that the output filename is a sensible length
-	int flen=strlen(argv[i+6]);
+	int64_t flen=strlen(argv[i+6]);
 	if(flen>4096) {
 		fputs("voro++: Filename too long\n",stderr);
 		wl.deallocate();
@@ -427,7 +427,7 @@ int main(int argc,char **argv) {
 
 	// Now switch depending on whether polydispersity was enabled, and
 	// whether output ordering is requested
-	double vol=0;int tp=0,vcc=0;
+	double vol=0;int64_t tp=0,vcc=0;
 	if(polydisperse) {
 		if(ordered) {
 			particle_order vo;

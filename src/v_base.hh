@@ -25,18 +25,18 @@ namespace voro {
 class voro_base {
 	public:
 		/** The number of blocks in the x direction. */
-		const int nx;
+		const int64_t nx;
 		/** The number of blocks in the y direction. */
-		const int ny;
+		const int64_t ny;
 		/** The number of blocks in the z direction. */
-		const int nz;
+		const int64_t nz;
 		/** A constant, set to the value of nx multiplied by ny, which
 		 * is used in the routines that step through blocks in
 		 * sequence. */
-		const int nxy;
+		const int64_t nxy;
 		/** A constant, set to the value of nx*ny*nz, which is used in
 		 * the routines that step through blocks in sequence. */
-		const int nxyz;
+		const int64_t nxyz;
 		/** The size of a computational block in the x direction. */
 		const double boxx;
 		/** The size of a computational block in the y direction. */
@@ -54,33 +54,33 @@ class voro_base {
 		 * construction, by the initialize_radii() routine. */
 		double *mrad;
 		/** The pre-computed block worklists. */
-		static const unsigned int wl[wl_seq_length*wl_hgridcu];
+		static const uint64_t wl[wl_seq_length*wl_hgridcu];
 		bool contains_neighbor(const char* format);
-		voro_base(int nx_,int ny_,int nz_,double boxx_,double boxy_,double boxz_);
+		voro_base(int64_t nx_,int64_t ny_,int64_t nz_,double boxx_,double boxy_,double boxz_);
 		~voro_base() {delete [] mrad;}
 	protected:
-		/** A custom int function that returns consistent stepping
+		/** A custom int64_t function that returns consistent stepping
 		 * for negative numbers, so that (-1.5, -0.5, 0.5, 1.5) maps
 		 * to (-2,-1,0,1).
 		 * \param[in] a the number to consider.
-		 * \return The value of the custom int operation. */
-		inline int step_int(double a) {return a<0?int(a)-1:int(a);}
+		 * \return The value of the custom int64_t operation. */
+		inline int64_t step_int(double a) {return a<0?int64_t(a)-1:int64_t(a);}
 		/** A custom modulo function that returns consistent stepping
 		 * for negative numbers. For example, (-2,-1,0,1,2) step_mod 2
 		 * is (0,1,0,1,0).
 		 * \param[in] (a,b) the input integers.
 		 * \return The value of a modulo b, consistent for negative
 		 * numbers. */
-		inline int step_mod(int a,int b) {return a>=0?a%b:b-1-(b-1-a)%b;}
+		inline int64_t step_mod(int64_t a,int64_t b) {return a>=0?a%b:b-1-(b-1-a)%b;}
 		/** A custom integer division function that returns consistent
 		 * stepping for negative numbers. For example, (-2,-1,0,1,2)
 		 * step_div 2 is (-1,-1,0,0,1).
 		 * \param[in] (a,b) the input integers.
 		 * \return The value of a div b, consistent for negative
 		 * numbers. */
-		inline int step_div(int a,int b) {return a>=0?a/b:-1+(a+1)/b;}
+		inline int64_t step_div(int64_t a,int64_t b) {return a>=0?a/b:-1+(a+1)/b;}
 	private:
-		void compute_minimum(double &minr,double &xlo,double &xhi,double &ylo,double &yhi,double &zlo,double &zhi,int ti,int tj,int tk);
+		void compute_minimum(double &minr,double &xlo,double &xhi,double &ylo,double &yhi,double &zlo,double &zhi,int64_t ti,int64_t tj,int64_t tk);
 };
 
 }

@@ -16,53 +16,53 @@ namespace voro {
 
 // These constants set the initial memory allocation for the Voronoi cell
 /** The initial memory allocation for the number of vertices. */
-const int init_vertices=256;
+const int64_t init_vertices=256;
 /** The initial memory allocation for the maximum vertex order. */
-const int init_vertex_order=64;
+const int64_t init_vertex_order=64;
 /** The initial memory allocation for the number of regular vertices of order
  * 3. */
-const int init_3_vertices=256;
+const int64_t init_3_vertices=256;
 /** The initial memory allocation for the number of vertices of higher order.
  */
-const int init_n_vertices=8;
+const int64_t init_n_vertices=8;
 /** The initial size for the delete stack. */
-const int init_delete_size=256;
+const int64_t init_delete_size=256;
 /** The initial size for the auxiliary delete stack. */
-const int init_delete2_size=256;
+const int64_t init_delete2_size=256;
 /** The initial size for the extra search stack. */
-const int init_xsearch_size=32;
+const int64_t init_xsearch_size=32;
 /** The initial size for the wall pointer array. */
-const int init_wall_size=32;
+const int64_t init_wall_size=32;
 /** The default initial size for the ordering class. */
-const int init_ordering_size=4096;
+const int64_t init_ordering_size=4096;
 /** The initial size of the pre_container chunk index. */
-const int init_chunk_size=256;
+const int64_t init_chunk_size=256;
 
 // If the initial memory is too small, the program dynamically allocates more.
 // However, if the limits below are reached, then the program bails out.
 /** The maximum memory allocation for the number of vertices. */
-const int max_vertices=16777216;
+const int64_t max_vertices=16777216;
 /** The maximum memory allocation for the maximum vertex order. */
-const int max_vertex_order=2048;
+const int64_t max_vertex_order=2048;
 /** The maximum memory allocation for the any particular order of vertex. */
-const int max_n_vertices=16777216;
+const int64_t max_n_vertices=16777216;
 /** The maximum size for the delete stack. */
-const int max_delete_size=16777216;
+const int64_t max_delete_size=16777216;
 /** The maximum size for the auxiliary delete stack. */
-const int max_delete2_size=16777216;
+const int64_t max_delete2_size=16777216;
 /** The maximum size for the extra search stack. */
-const int max_xsearch_size=16777216;
+const int64_t max_xsearch_size=16777216;
 /** The maximum amount of particle memory allocated for a single region. */
-const int max_particle_memory=16777216;
+const int64_t max_particle_memory=16777216;
 /** The maximum size for the wall pointer array. */
-const int max_wall_size=2048;
+const int64_t max_wall_size=2048;
 /** The maximum size for the ordering class. */
-const int max_ordering_size=67108864;
+const int64_t max_ordering_size=67108864;
 /** The maximum size for the pre_container chunk index. */
-const int max_chunk_size=65536;
+const int64_t max_chunk_size=65536;
 
 /** The chunk size in the pre_container classes. */
-const int pre_container_chunk_size=1024;
+const int64_t pre_container_chunk_size=1024;
 
 #ifndef VOROPP_VERBOSE
 /** Voro++ can print a number of different status and debugging messages to
@@ -90,7 +90,7 @@ const double large_number=std::numeric_limits<double>::max();
 const double default_radius=0.5;
 
 /** The maximum number of shells of periodic images to test over. */
-const int max_unit_voro_shells=10;
+const int64_t max_unit_voro_shells=10;
 
 /** A guess for the optimal number of particles per block, used to set up the
  * container grid. */

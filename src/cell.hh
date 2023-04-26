@@ -36,22 +36,22 @@ class voronoicell_base {
 		 * hold the vertex information. If more vertices are created
 		 * than can fit in this array, then it is dynamically extended
 		 * using the add_memory_vertices routine. */
-		int current_vertices;
+		int64_t current_vertices;
 		/** This holds the current maximum allowed order of a vertex,
 		 * which sets the size of the mem, mep, and mec arrays. If a
 		 * vertex is created with more vertices than this, the arrays
 		 * are dynamically extended using the add_memory_vorder routine.
 		 */
-		int current_vertex_order;
+		int64_t current_vertex_order;
 		/** This sets the size of the main delete stack. */
-		int current_delete_size;
+		int64_t current_delete_size;
 		/** This sets the size of the auxiliary delete stack. */
-		int current_delete2_size;
+		int64_t current_delete2_size;
 		/** This sets the size of the extra search stack. */
-		int current_xsearch_size;
+		int64_t current_xsearch_size;
 		/** This sets the total number of vertices in the current cell.
 		 */
-		int p;
+		int64_t p;
 		/** This is the index of particular point in the cell, which is
 		 * used to start the tracing routines for plane intersection
 		 * and cutting. These routines will work starting from any
@@ -59,7 +59,7 @@ class voronoicell_base {
 		 * point considered, since in many cases, the cell construction
 		 * algorithm may consider many planes with similar vectors
 		 * concurrently. */
-		int up;
+		int64_t up;
 		/** This is a two dimensional array that holds information
 		 * about the edge connections of the vertices that make up the
 		 * cell. The two dimensional array is not allocated in the
@@ -77,12 +77,12 @@ class voronoicell_base {
 		 * ed[ed[i][j]][ed[i][m+j]]=i. The final entry holds a back
 		 * pointer, so that ed[i+2*m]=i. The back pointers are used
 		 * when rearranging the memory. */
-		int **ed;
+		int64_t **ed;
 		/** This array holds the order of the vertices in the Voronoi
 		 * cell. This array is dynamically allocated, with its current
 		 * size held by current_vertices. */
-		int *nu;
-		unsigned int *mask;
+		int64_t *nu;
+		uint64_t *mask;
 		/** This in an array with size 3*current_vertices for holding
 		 * the positions of the vertices. */
 		double *pts;
@@ -132,9 +132,9 @@ class voronoicell_base {
 		double total_edge_distance();
 		double surface_area();
 		void centroid(double &cx,double &cy,double &cz);
-		int number_of_faces();
-		int number_of_edges();
-		void vertex_orders(std::vector<int> &v);
+		int64_t number_of_faces();
+		int64_t number_of_edges();
+		void vertex_orders(std::vector<int64_t> &v);
 		void output_vertex_orders(FILE *fp=stdout);
 		void vertices(std::vector<double> &v);
 		void output_vertices(FILE *fp=stdout);
@@ -155,23 +155,23 @@ class voronoicell_base {
 			std::vector<double> v;face_areas(v);
 			voro_print_vector(v,fp);
 		}
-		void face_orders(std::vector<int> &v);
+		void face_orders(std::vector<int64_t> &v);
 		/** Outputs a list of the number of sides of each face.
 		 * \param[in] fp the file handle to write to. */
 		inline void output_face_orders(FILE *fp=stdout) {
-			std::vector<int> v;face_orders(v);
+			std::vector<int64_t> v;face_orders(v);
 			voro_print_vector(v,fp);
 		}
-		void face_freq_table(std::vector<int> &v);
+		void face_freq_table(std::vector<int64_t> &v);
 		/** Outputs a */
 		inline void output_face_freq_table(FILE *fp=stdout) {
-			std::vector<int> v;face_freq_table(v);
+			std::vector<int64_t> v;face_freq_table(v);
 			voro_print_vector(v,fp);
 		}
-		void face_vertices(std::vector<int> &v);
+		void face_vertices(std::vector<int64_t> &v);
 		/** Outputs the */
 		inline void output_face_vertices(FILE *fp=stdout) {
-			std::vector<int> v;face_vertices(v);
+			std::vector<int64_t> v;face_vertices(v);
 			voro_print_face_vertices(v,fp);
 		}
 		void face_perimeters(std::vector<double> &v);
@@ -194,9 +194,9 @@ class voronoicell_base {
 		 * \param[in] format the custom format string to use.
 		 * \param[in] fp the file handle to write to. */
 		inline void output_custom(const char *format,FILE *fp=stdout) {output_custom(format,0,0,0,0,default_radius,fp);}
-		void output_custom(const char *format,int i,double x,double y,double z,double r,FILE *fp=stdout);
+		void output_custom(const char *format,int64_t i,double x,double y,double z,double r,FILE *fp=stdout);
 		template<class vc_class>
-		bool nplane(vc_class &vc,double x,double y,double z,double rsq,int p_id);
+		bool nplane(vc_class &vc,double x,double y,double z,double rsq,int64_t p_id);
 		bool plane_intersects(double x,double y,double z,double rsq);
 		bool plane_intersects_guess(double x,double y,double z,double rsq);
 		void construct_relations();
@@ -208,7 +208,7 @@ class voronoicell_base {
 		 * \param[out] v a reference to a vector in which to return the
 		 *               results. If no neighbor information is
 		 *               available, a blank vector is returned. */
-		virtual void neighbors(std::vector<int> &v) {v.clear();}
+		virtual void neighbors(std::vector<int64_t> &v) {v.clear();}
 		/** This is a virtual function that is overridden by a routine
 		 * to print a list of IDs of neighboring particles
 		 * corresponding to each face. By default, when no neighbor
@@ -220,27 +220,27 @@ class voronoicell_base {
 		 * default, when no neighbor information is available, the
 		 * routine does nothing.
 		 * \param[in] i the vertex to consider. */
-		virtual void print_edges_neighbors(int i) {};
+		virtual void print_edges_neighbors(int64_t i) {};
 		/** This is a simple inline function for picking out the index
 		 * of the next edge counterclockwise at the current vertex.
 		 * \param[in] a the index of an edge of the current vertex.
 		 * \param[in] p the number of the vertex.
 		 * \return 0 if a=nu[p]-1, or a+1 otherwise. */
-		inline int cycle_up(int a,int p) {return a==nu[p]-1?0:a+1;}
+		inline int64_t cycle_up(int64_t a,int64_t p) {return a==nu[p]-1?0:a+1;}
 		/** This is a simple inline function for picking out the index
 		 * of the next edge clockwise from the current vertex.
 		 * \param[in] a the index of an edge of the current vertex.
 		 * \param[in] p the number of the vertex.
 		 * \return nu[p]-1 if a=0, or a-1 otherwise. */
-		inline int cycle_down(int a,int p) {return a==0?nu[p]-1:a-1;}
+		inline int64_t cycle_down(int64_t a,int64_t p) {return a==0?nu[p]-1:a-1;}
 	protected:
 		/** This a one dimensional array that holds the current sizes
 		 * of the memory allocations for them mep array.*/
-		int *mem;
+		int64_t *mem;
 		/** This is a one dimensional array that holds the current
 		 * number of vertices of order p that are stored in the mep[p]
 		 * array. */
-		int *mec;
+		int64_t *mec;
 		/** This is a two dimensional array for holding the information
 		 * about the edges of the Voronoi cell. mep[p] is a
 		 * one-dimensional array for holding the edge information about
@@ -248,7 +248,7 @@ class voronoicell_base {
 		 * integers of information. The total number of vertices held
 		 * on mep[p] is stored in mem[p]. If the space runs out, the
 		 * code allocates more using the add_memory() routine. */
-		int **mep;
+		int64_t **mep;
 		inline void reset_edges();
 		template<class vc_class>
 		void check_memory_for_copy(vc_class &vc,voronoicell_base* vb);
@@ -257,13 +257,13 @@ class voronoicell_base {
 		/** This is the delete stack, used to store the vertices which
 		 * are going to be deleted during the plane cutting procedure.
 		 */
-		int *ds,*stackp,*stacke;
+		int64_t *ds,*stackp,*stacke;
 		/** This is the auxiliary delete stack, which has size set by
 		 * current_delete2_size. */
-		int *ds2,*stackp2,*stacke2;
+		int64_t *ds2,*stackp2,*stacke2;
 		/** This is the extra search stack. */
-		int *xse,*stackp3,*stacke3;
-		unsigned int maskc;
+		int64_t *xse,*stackp3,*stacke3;
+		uint64_t maskc;
 		/** The x coordinate of the normal vector to the test plane. */
 		double px;
 		/** The y coordinate of the normal vector to the test plane. */
@@ -273,7 +273,7 @@ class voronoicell_base {
 		/** The magnitude of the normal vector to the test plane. */
 		double prsq;
 		template<class vc_class>
-		void add_memory(vc_class &vc,int i);
+		void add_memory(vc_class &vc,int64_t i);
 		template<class vc_class>
 		void add_memory_vertices(vc_class &vc);
 		template<class vc_class>
@@ -281,36 +281,36 @@ class voronoicell_base {
 		void add_memory_ds();
 		void add_memory_ds2();
 		void add_memory_xse();
-		bool failsafe_find(int &lp,int &ls,int &us,double &l,double &u);
+		bool failsafe_find(int64_t &lp,int64_t &ls,int64_t &us,double &l,double &u);
 		template<class vc_class>
-		bool create_facet(vc_class &vc,int lp,int ls,double l,int us,double u,int p_id);
+		bool create_facet(vc_class &vc,int64_t lp,int64_t ls,double l,int64_t us,double u,int64_t p_id);
 		template<class vc_class>
 		bool collapse_order1(vc_class &vc);
 		template<class vc_class>
 		inline bool collapse_order2(vc_class &vc);
 		template<class vc_class>
-		bool delete_connection(vc_class &vc,int j,int k,bool hand);
-		inline bool search_for_outside_edge(int &up);
-		inline void add_to_stack(int sc2,int lp);
+		bool delete_connection(vc_class &vc,int64_t j,int64_t k,bool hand);
+		inline bool search_for_outside_edge(int64_t &up);
+		inline void add_to_stack(int64_t sc2,int64_t lp);
 		inline void reset_mask() {
-			for(int i=0;i<current_vertices;i++) mask[i]=0;
+			for(int64_t i=0;i<current_vertices;i++) mask[i]=0;
 			maskc=4;
 		}
-		inline bool search_downward(unsigned int &uw,int &lp,int &ls,int &us,double &l,double &u);
-		bool definite_max(int &lp,int &ls,double &l,double &u,unsigned int &uw);
-		inline bool search_upward(unsigned int &lw,int &lp,int &ls,int &us,double &l,double &u);
-		bool definite_min(int &lp,int &us,double &l,double &u,unsigned int &lw);
-		inline void minkowski_contrib(int i,int k,int m,double r,double &ar,double &vo);
+		inline bool search_downward(uint64_t &uw,int64_t &lp,int64_t &ls,int64_t &us,double &l,double &u);
+		bool definite_max(int64_t &lp,int64_t &ls,double &l,double &u,uint64_t &uw);
+		inline bool search_upward(uint64_t &lw,int64_t &lp,int64_t &ls,int64_t &us,double &l,double &u);
+		bool definite_min(int64_t &lp,int64_t &us,double &l,double &u,uint64_t &lw);
+		inline void minkowski_contrib(int64_t i,int64_t k,int64_t m,double r,double &ar,double &vo);
 		void minkowski_edge(double x0,double r1,double s1,double r2,double s2,double r,double &ar,double &vo);
 		void minkowski_formula(double x0,double y0,double z0,double r,double &ar,double &vo);
 		inline bool plane_intersects_track(double x,double y,double z,double rs,double g);
-		inline void normals_search(std::vector<double> &v,int i,int j,int k);
-		inline bool search_edge(int l,int &m,int &k);
-		inline unsigned int m_test(int n,double &ans);
-		inline unsigned int m_testx(int n,double &ans);
-		unsigned int m_calc(int n,double &ans);
-		inline void flip(int tp) {ed[tp][nu[tp]<<1]=-1-ed[tp][nu[tp]<<1];}
-		int check_marginal(int n,double &ans);
+		inline void normals_search(std::vector<double> &v,int64_t i,int64_t j,int64_t k);
+		inline bool search_edge(int64_t l,int64_t &m,int64_t &k);
+		inline uint64_t m_test(int64_t n,double &ans);
+		inline uint64_t m_testx(int64_t n,double &ans);
+		uint64_t m_calc(int64_t n,double &ans);
+		inline void flip(int64_t tp) {ed[tp][nu[tp]<<1]=-1-ed[tp][nu[tp]<<1];}
+		int64_t check_marginal(int64_t n,double &ans);
 		friend class voronoicell;
 		friend class voronoicell_neighbor;
 };
@@ -343,7 +343,7 @@ class voronoicell : public voronoicell_base {
 		 *                 neighbor tracking is enabled.
 		 * \return False if the plane cut deleted the cell entirely,
 		 *         true otherwise. */
-		inline bool nplane(double x,double y,double z,double rsq,int p_id) {
+		inline bool nplane(double x,double y,double z,double rsq,int64_t p_id) {
 			return nplane(*this,x,y,z,rsq,0);
 		}
 		/** Cuts a Voronoi cell using by the plane corresponding to the
@@ -353,7 +353,7 @@ class voronoicell : public voronoicell_base {
 		 *                 neighbor tracking is enabled.
 		 * \return False if the plane cut deleted the cell entirely,
 		 *         true otherwise. */
-		inline bool nplane(double x,double y,double z,int p_id) {
+		inline bool nplane(double x,double y,double z,int64_t p_id) {
 			double rsq=x*x+y*y+z*z;
 			return nplane(*this,x,y,z,rsq,0);
 		}
@@ -401,24 +401,24 @@ class voronoicell : public voronoicell_base {
 		}
 		void init_l_shape();
 	private:
-		inline void n_allocate(int i,int m) {};
-		inline void n_add_memory_vertices(int i) {};
-		inline void n_add_memory_vorder(int i) {};
-		inline void n_set_pointer(int p,int n) {};
-		inline void n_copy(int a,int b,int c,int d) {};
-		inline void n_set(int a,int b,int c) {};
-		inline void n_set_aux1(int k) {};
-		inline void n_copy_aux1(int a,int b) {};
-		inline void n_copy_aux1_shift(int a,int b) {};
-		inline void n_set_aux2_copy(int a,int b) {};
-		inline void n_copy_pointer(int a,int b) {};
-		inline void n_set_to_aux1(int j) {};
-		inline void n_set_to_aux2(int j) {};
-		inline void n_allocate_aux1(int i) {};
-		inline void n_switch_to_aux1(int i) {};
-		inline void n_copy_to_aux1(int i,int m) {};
-		inline void n_set_to_aux1_offset(int k,int m) {};
-		inline void n_neighbors(std::vector<int> &v) {v.clear();};
+		inline void n_allocate(int64_t i,int64_t m) {};
+		inline void n_add_memory_vertices(int64_t i) {};
+		inline void n_add_memory_vorder(int64_t i) {};
+		inline void n_set_pointer(int64_t p,int64_t n) {};
+		inline void n_copy(int64_t a,int64_t b,int64_t c,int64_t d) {};
+		inline void n_set(int64_t a,int64_t b,int64_t c) {};
+		inline void n_set_aux1(int64_t k) {};
+		inline void n_copy_aux1(int64_t a,int64_t b) {};
+		inline void n_copy_aux1_shift(int64_t a,int64_t b) {};
+		inline void n_set_aux2_copy(int64_t a,int64_t b) {};
+		inline void n_copy_pointer(int64_t a,int64_t b) {};
+		inline void n_set_to_aux1(int64_t j) {};
+		inline void n_set_to_aux2(int64_t j) {};
+		inline void n_allocate_aux1(int64_t i) {};
+		inline void n_switch_to_aux1(int64_t i) {};
+		inline void n_copy_to_aux1(int64_t i,int64_t m) {};
+		inline void n_set_to_aux1_offset(int64_t k,int64_t m) {};
+		inline void n_neighbors(std::vector<int64_t> &v) {v.clear();};
 		friend class voronoicell_base;
 };
 
@@ -436,14 +436,14 @@ class voronoicell_neighbor : public voronoicell_base {
 		 * associated with each vertex. mne[p] is a one dimensional
 		 * array which holds all of the neighbor information for
 		 * vertices of order p. */
-		int **mne;
+		int64_t **mne;
 		/** This is a two dimensional array that holds the neighbor
 		 * information associated with each vertex. ne[i] points to a
 		 * one-dimensional array in mne[nu[i]]. ne[i][j] holds the
 		 * neighbor information associated with the jth edge of vertex
 		 * i. It is set to the ID number of the plane that made the
 		 * face that is clockwise from the jth edge. */
-		int **ne;
+		int64_t **ne;
 		voronoicell_neighbor() : voronoicell_base(default_length*default_length) {
 			memory_setup();
 		}
@@ -465,7 +465,7 @@ class voronoicell_neighbor : public voronoicell_base {
 		 * \param[in] p_id the plane ID (for neighbor tracking only).
 		 * \return False if the plane cut deleted the cell entirely,
 		 * true otherwise. */
-		inline bool nplane(double x,double y,double z,double rsq,int p_id) {
+		inline bool nplane(double x,double y,double z,double rsq,int64_t p_id) {
 			return nplane(*this,x,y,z,rsq,p_id);
 		}
 		/** This routine calculates the modulus squared of the vector
@@ -475,7 +475,7 @@ class voronoicell_neighbor : public voronoicell_base {
 		 * \param[in] p_id the plane ID (for neighbor tracking only).
 		 * \return False if the plane cut deleted the cell entirely,
 		 *         true otherwise. */
-		inline bool nplane(double x,double y,double z,int p_id) {
+		inline bool nplane(double x,double y,double z,int64_t p_id) {
 			double rsq=x*x+y*y+z*z;
 			return nplane(*this,x,y,z,rsq,p_id);
 		}
@@ -505,46 +505,46 @@ class voronoicell_neighbor : public voronoicell_base {
 		void init_octahedron(double l);
 		void init_tetrahedron(double x0,double y0,double z0,double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3);
 		void check_facets();
-		virtual void neighbors(std::vector<int> &v);
-		virtual void print_edges_neighbors(int i);
+		virtual void neighbors(std::vector<int64_t> &v);
+		virtual void print_edges_neighbors(int64_t i);
 		virtual void output_neighbors(FILE *fp=stdout) {
-			std::vector<int> v;neighbors(v);
+			std::vector<int64_t> v;neighbors(v);
 			voro_print_vector(v,fp);
 		}
 	private:
-		int *paux1;
-		int *paux2;
+		int64_t *paux1;
+		int64_t *paux2;
 		void memory_setup();
-		inline void n_allocate(int i,int m) {mne[i]=new int[m*i];}
-		inline void n_add_memory_vertices(int i) {
-			int **pp=new int*[i];
-			for(int j=0;j<current_vertices;j++) pp[j]=ne[j];
+		inline void n_allocate(int64_t i,int64_t m) {mne[i]=new int64_t[m*i];}
+		inline void n_add_memory_vertices(int64_t i) {
+			int64_t **pp=new int64_t*[i];
+			for(int64_t j=0;j<current_vertices;j++) pp[j]=ne[j];
 			delete [] ne;ne=pp;
 		}
-		inline void n_add_memory_vorder(int i) {
-			int **p2=new int*[i];
-			for(int j=0;j<current_vertex_order;j++) p2[j]=mne[j];
+		inline void n_add_memory_vorder(int64_t i) {
+			int64_t **p2=new int64_t*[i];
+			for(int64_t j=0;j<current_vertex_order;j++) p2[j]=mne[j];
 			delete [] mne;mne=p2;
 		}
-		inline void n_set_pointer(int p,int n) {
+		inline void n_set_pointer(int64_t p,int64_t n) {
 			ne[p]=mne[n]+n*mec[n];
 		}
-		inline void n_copy(int a,int b,int c,int d) {ne[a][b]=ne[c][d];}
-		inline void n_set(int a,int b,int c) {ne[a][b]=c;}
-		inline void n_set_aux1(int k) {paux1=mne[k]+k*mec[k];}
-		inline void n_copy_aux1(int a,int b) {paux1[b]=ne[a][b];}
-		inline void n_copy_aux1_shift(int a,int b) {paux1[b]=ne[a][b+1];}
-		inline void n_set_aux2_copy(int a,int b) {
+		inline void n_copy(int64_t a,int64_t b,int64_t c,int64_t d) {ne[a][b]=ne[c][d];}
+		inline void n_set(int64_t a,int64_t b,int64_t c) {ne[a][b]=c;}
+		inline void n_set_aux1(int64_t k) {paux1=mne[k]+k*mec[k];}
+		inline void n_copy_aux1(int64_t a,int64_t b) {paux1[b]=ne[a][b];}
+		inline void n_copy_aux1_shift(int64_t a,int64_t b) {paux1[b]=ne[a][b+1];}
+		inline void n_set_aux2_copy(int64_t a,int64_t b) {
 			paux2=mne[b]+b*mec[b];
-			for(int i=0;i<b;i++) ne[a][i]=paux2[i];
+			for(int64_t i=0;i<b;i++) ne[a][i]=paux2[i];
 		}
-		inline void n_copy_pointer(int a,int b) {ne[a]=ne[b];}
-		inline void n_set_to_aux1(int j) {ne[j]=paux1;}
-		inline void n_set_to_aux2(int j) {ne[j]=paux2;}
-		inline void n_allocate_aux1(int i) {paux1=new int[i*mem[i]];}
-		inline void n_switch_to_aux1(int i) {delete [] mne[i];mne[i]=paux1;}
-		inline void n_copy_to_aux1(int i,int m) {paux1[m]=mne[i][m];}
-		inline void n_set_to_aux1_offset(int k,int m) {ne[k]=paux1+m;}
+		inline void n_copy_pointer(int64_t a,int64_t b) {ne[a]=ne[b];}
+		inline void n_set_to_aux1(int64_t j) {ne[j]=paux1;}
+		inline void n_set_to_aux2(int64_t j) {ne[j]=paux2;}
+		inline void n_allocate_aux1(int64_t i) {paux1=new int64_t[i*mem[i]];}
+		inline void n_switch_to_aux1(int64_t i) {delete [] mne[i];mne[i]=paux1;}
+		inline void n_copy_to_aux1(int64_t i,int64_t m) {paux1[m]=mne[i][m];}
+		inline void n_set_to_aux1_offset(int64_t k,int64_t m) {ne[k]=paux1+m;}
 		friend class voronoicell_base;
 };
 

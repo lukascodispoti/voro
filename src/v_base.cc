@@ -20,13 +20,13 @@ namespace voro {
  * of \f$r_n\f$ is calculated first, as the minimum distance to any block in
  * the shell surrounding the worklist. The \f$r_i\f$ are then computed in
  * reverse order by considering the distance to \f$w_{i+1}\f$. */
-voro_base::voro_base(int nx_,int ny_,int nz_,double boxx_,double boxy_,double boxz_) :
+voro_base::voro_base(int64_t nx_,int64_t ny_,int64_t nz_,double boxx_,double boxy_,double boxz_) :
 	nx(nx_), ny(ny_), nz(nz_), nxy(nx_*ny_), nxyz(nxy*nz_), boxx(boxx_), boxy(boxy_), boxz(boxz_),
 	xsp(1/boxx_), ysp(1/boxy_), zsp(1/boxz_), mrad(new double[wl_hgridcu*wl_seq_length]) {
-	const unsigned int b1=1<<21,b2=1<<22,b3=1<<24,b4=1<<25,b5=1<<27,b6=1<<28;
+	const uint64_t b1=1<<21,b2=1<<22,b3=1<<24,b4=1<<25,b5=1<<27,b6=1<<28;
 	const double xstep=boxx/wl_fgrid,ystep=boxy/wl_fgrid,zstep=boxz/wl_fgrid;
-	int i,j,k,lx,ly,lz,q;
-	unsigned int f,*e=const_cast<unsigned int*> (wl);
+	int64_t i,j,k,lx,ly,lz,q;
+	uint64_t f,*e=const_cast<uint64_t*> (wl);
 	double xlo,ylo,zlo,xhi,yhi,zhi,minr,*radp=mrad;
 	for(zlo=0,zhi=zstep,lz=0;lz<wl_hgrid;zlo=zhi,zhi+=zstep,lz++) {
 		for(ylo=0,yhi=ystep,ly=0;ly<wl_hgrid;ylo=yhi,yhi+=ystep,ly++) {
@@ -78,7 +78,7 @@ voro_base::voro_base(int nx_,int ny_,int nz_,double boxx_,double boxy_,double bo
  * \param[out] (xhi,yhi,zhi) the upper coordinates of the subregion being
  *                           considered.
  * \param[in] (ti,tj,tk) the coordinates of the block. */
-void voro_base::compute_minimum(double &minr,double &xlo,double &xhi,double &ylo,double &yhi,double &zlo,double &zhi,int ti,int tj,int tk) {
+void voro_base::compute_minimum(double &minr,double &xlo,double &xhi,double &ylo,double &yhi,double &zlo,double &zhi,int64_t ti,int64_t tj,int64_t tk) {
 	double radsq,temp;
 	if(ti>0) {temp=boxx*ti-xhi;radsq=temp*temp;}
 	else if(ti<0) {temp=xlo-boxx*(1+ti);radsq=temp*temp;}

@@ -11,7 +11,7 @@
 
 namespace voro {
 
-void check_duplicate(int n,double x,double y,double z,int id,double *qp) {
+void check_duplicate(int64_t n,double x,double y,double z,int64_t id,double *qp) {
 	double dx=*qp-x,dy=qp[1]-y,dz=qp[2]-z;
 	if(dx*dx+dy*dy+dz*dz<1e-10) {
 		printf("Duplicate: %d (%g,%g,%g) matches %d (%g,%g,%g)\n",n,x,y,z,id,*qp,qp[1],qp[2]);
@@ -24,7 +24,7 @@ void check_duplicate(int n,double x,double y,double z,int id,double *qp) {
  * Function for printing fatal error messages and exiting.
  * \param[in] p a pointer to the message to print.
  * \param[in] status the status code to return with. */
-void voro_fatal_error(const char *p,int status) {
+void voro_fatal_error(const char *p,int64_t status) {
 	fprintf(stderr,"voro++: %s\n",p);
 	exit(status);
 }
@@ -37,7 +37,7 @@ void voro_fatal_error(const char *p,int status) {
 void voro_print_positions(std::vector<double> &v,FILE *fp) {
 	if(v.size()>0) {
 		fprintf(fp,"(%g,%g,%g)",v[0],v[1],v[2]);
-		for(int k=3;(unsigned int) k<v.size();k+=3) {
+		for(int64_t k=3;(uint64_t) k<v.size();k+=3) {
 			fprintf(fp," (%g,%g,%g)",v[k],v[k+1],v[k+2]);
 		}
 	}
@@ -64,8 +64,8 @@ FILE* safe_fopen(const char *filename,const char *mode) {
  * Prints a vector of integers.
  * \param[in] v the vector to print.
  * \param[in] fp the file stream to print to. */
-void voro_print_vector(std::vector<int> &v,FILE *fp) {
-	int k=0,s=v.size();
+void voro_print_vector(std::vector<int64_t> &v,FILE *fp) {
+	int64_t k=0,s=v.size();
 	while(k+4<s) {
 		fprintf(fp,"%d %d %d %d ",v[k],v[k+1],v[k+2],v[k+3]);
 		k+=4;
@@ -85,7 +85,7 @@ void voro_print_vector(std::vector<int> &v,FILE *fp) {
  * \param[in] v the vector to print.
  * \param[in] fp the file stream to print to. */
 void voro_print_vector(std::vector<double> &v,FILE *fp) {
-	int k=0,s=v.size();
+	int64_t k=0,s=v.size();
 	while(k+4<s) {
 		fprintf(fp,"%g %g %g %g ",v[k],v[k+1],v[k+2],v[k+3]);
 		k+=4;
@@ -107,8 +107,8 @@ void voro_print_vector(std::vector<double> &v,FILE *fp) {
  * until the end of the vector is reached.
  * \param[in] v the vector to interpret and print.
  * \param[in] fp the file stream to print to. */
-void voro_print_face_vertices(std::vector<int> &v,FILE *fp) {
-	int j,k=0,l;
+void voro_print_face_vertices(std::vector<int64_t> &v,FILE *fp) {
+	int64_t j,k=0,l;
 	if(v.size()>0) {
 		l=v[k++];
 		if(l<=1) {
@@ -120,7 +120,7 @@ void voro_print_face_vertices(std::vector<int> &v,FILE *fp) {
 			while(k<j) fprintf(fp,",%d",v[k++]);
 			fputs(")",fp);
 		}
-		while((unsigned int) k<v.size()) {
+		while((uint64_t) k<v.size()) {
 			l=v[k++];
 			if(l<=1) {
 				if(l==1) fprintf(fp," (%d)",v[k++]);

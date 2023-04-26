@@ -51,37 +51,37 @@ class pre_container_base {
 		/** A boolean value that determines if the z coordinate in
 		 * periodic or not. */
 		const bool zperiodic;
-		void guess_optimal(int &nx,int &ny,int &nz);
-		pre_container_base(double ax_,double bx_,double ay_,double by_,double az_,double bz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int ps_);
+		void guess_optimal(int64_t &nx,int64_t &ny,int64_t &nz);
+		pre_container_base(double ax_,double bx_,double ay_,double by_,double az_,double bz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int64_t ps_);
 		~pre_container_base();
 		/** Calculates and returns the total number of particles stored
 		 * within the class.
 		 * \return The number of particles. */
-		inline int total_particles() {
+		inline int64_t total_particles() {
 			return (end_id-pre_id)*pre_container_chunk_size+(ch_id-*end_id);
 		}
 	protected:
 		/** The number of doubles associated with a single particle
 		 * (three for the standard container, four when radius
 		 * information is stored). */
-		const int ps;
+		const int64_t ps;
 		void new_chunk();
 		void extend_chunk_index();
 		/** The size of the chunk index. */
-		int index_sz;
+		int64_t index_sz;
 		/** A pointer to the chunk index to store the integer particle
 		 * IDs. */
-		int **pre_id;
+		int64_t **pre_id;
 		/** A pointer to the last allocated integer ID chunk. */
-		int **end_id;
+		int64_t **end_id;
 		/** A pointer to the end of the integer ID chunk index, used to
 		 * determine when the chunk index is full. */
-		int **l_id;
+		int64_t **l_id;
 		/** A pointer to the next available slot on the current
 		 * particle ID chunk. */
-		int *ch_id;
+		int64_t *ch_id;
 		/** A pointer to the end of the current integer chunk. */
-		int *e_id;
+		int64_t *e_id;
 		/** A pointer to the chunk index to store the floating point
 		 * information associated with particles. */
 		double **pre_p;
@@ -112,7 +112,7 @@ class pre_container : public pre_container_base {
 		pre_container(double ax_,double bx_,double ay_,double by_,double az_,double bz_,
 				bool xperiodic_,bool yperiodic_,bool zperiodic_)
 			: pre_container_base(ax_,bx_,ay_,by_,az_,bz_,xperiodic_,yperiodic_,zperiodic_,3) {};
-		void put(int n,double x,double y,double z);
+		void put(int64_t n,double x,double y,double z);
 		void import(FILE *fp=stdin);
 		/** Imports particles from a file.
 		 * \param[in] filename the name of the file to read from. */
@@ -144,7 +144,7 @@ class pre_container_poly : public pre_container_base {
 		pre_container_poly(double ax_,double bx_,double ay_,double by_,double az_,double bz_,
 				bool xperiodic_,bool yperiodic_,bool zperiodic_)
 			: pre_container_base(ax_,bx_,ay_,by_,az_,bz_,xperiodic_,yperiodic_,zperiodic_,4) {};
-		void put(int n,double x,double y,double z,double r);
+		void put(int64_t n,double x,double y,double z,double r);
 		void import(FILE *fp=stdin);
 		/** Imports particles from a file.
 		 * \param[in] filename the name of the file to read from. */

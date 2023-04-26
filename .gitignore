@@ -1,0 +1,8 @@
+.cache/
+voro++
+compile_commands.json
+.DS_Store
+lib/
+man/
+*.o
+*.a

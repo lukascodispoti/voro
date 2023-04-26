@@ -20,13 +20,13 @@ namespace voro {
  * \param[in] con_ a reference to the container class to use.
  * \param[in] (hx_,hy_,hz_) the size of the mask to use. */
 template<class c_class>
-voro_compute<c_class>::voro_compute(c_class &con_,int hx_,int hy_,int hz_) :
+voro_compute<c_class>::voro_compute(c_class &con_,int64_t hx_,int64_t hy_,int64_t hz_) :
 	con(con_), boxx(con_.boxx), boxy(con_.boxy), boxz(con_.boxz),
 	xsp(con_.xsp), ysp(con_.ysp), zsp(con_.zsp),
 	hx(hx_), hy(hy_), hz(hz_), hxy(hx_*hy_), hxyz(hxy*hz_), ps(con_.ps),
 	id(con_.id), p(con_.p), co(con_.co), bxsq(boxx*boxx+boxy*boxy+boxz*boxz),
 	mv(0), qu_size(3*(3+hxy+hz*(hx+hy))), wl(con_.wl), mrad(con_.mrad),
-	mask(new unsigned int[hxyz]), qu(new int[qu_size]), qu_l(qu+qu_size) {
+	mask(new uint64_t[hxyz]), qu(new int64_t[qu_size]), qu_l(qu+qu_size) {
 	reset_mask();
 }
 
@@ -44,9 +44,9 @@ voro_compute<c_class>::voro_compute(c_class &con_,int hx_,int hy_,int hz_) :
  * \param[in,out] mrs the current minimum distance, that may be updated if a
  * 		      closer particle is found. */
 template<class c_class>
-inline void voro_compute<c_class>::scan_all(int ijk,double x,double y,double z,int di,int dj,int dk,particle_record &w,double &mrs) {
+inline void voro_compute<c_class>::scan_all(int64_t ijk,double x,double y,double z,int64_t di,int64_t dj,int64_t dk,particle_record &w,double &mrs) {
 	double x1,y1,z1,rs;bool in_block=false;
-	for(int l=0;l<co[ijk];l++) {
+	for(int64_t l=0;l<co[ijk];l++) {
 		x1=p[ijk][ps*l]-x;
 		y1=p[ijk][ps*l+1]-y;
 		z1=p[ijk][ps*l+2]-z;
@@ -68,11 +68,11 @@ inline void voro_compute<c_class>::scan_all(int ijk,double x,double y,double z,i
  * 		 about the particle whose Voronoi cell the vector is within.
  * \param[out] mrs the minimum computed distance. */
 template<class c_class>
-void voro_compute<c_class>::find_voronoi_cell(double x,double y,double z,int ci,int cj,int ck,int ijk,particle_record &w,double &mrs) {
+void voro_compute<c_class>::find_voronoi_cell(double x,double y,double z,int64_t ci,int64_t cj,int64_t ck,int64_t ijk,particle_record &w,double &mrs) {
 	double qx=0,qy=0,qz=0,rs;
-	int i,j,k,di,dj,dk,ei,ej,ek,f,g,disp;
+	int64_t i,j,k,di,dj,dk,ei,ej,ek,f,g,disp;
 	double fx,fy,fz,mxs,mys,mzs,*radp;
-	unsigned int q,*e,*mijk;
+	uint64_t q,*e,*mijk;
 
 	// Init setup for parameters to return
 	w.ijk=-1;mrs=large_number;
@@ -85,9 +85,9 @@ void voro_compute<c_class>::find_voronoi_cell(double x,double y,double z,int ci,
 	// Now compute the fractional position of the particle within its
 	// region and store it in (fx,fy,fz). We use this to compute an index
 	// (di,dj,dk) of which subregion the particle is within.
-	unsigned int m1,m2;
+	uint64_t m1,m2;
 	con.frac_pos(x,y,z,ci,cj,ck,fx,fy,fz);
-	di=int(fx*xsp*wl_fgrid);dj=int(fy*ysp*wl_fgrid);dk=int(fz*zsp*wl_fgrid);
+	di=int64_t(fx*xsp*wl_fgrid);dj=int64_t(fy*ysp*wl_fgrid);dk=int64_t(fz*zsp*wl_fgrid);
 
 	// The indices (di,dj,dk) tell us which worklist to use, to test the
 	// blocks in the optimal order. But we only store worklists for the
@@ -118,7 +118,7 @@ void voro_compute<c_class>::find_voronoi_cell(double x,double y,double z,int ci,
 	// point at the right offsets
 	ijk=di+wl_hgrid*(dj+wl_hgrid*dk);
 	radp=mrad+ijk*wl_seq_length;
-	e=(const_cast<unsigned int*> (wl))+ijk*wl_seq_length;
+	e=(const_cast<uint64_t*> (wl))+ijk*wl_seq_length;
 
 	// Read in how many items in the worklist can be tested without having to
 	// worry about writing to the mask
@@ -164,7 +164,7 @@ void voro_compute<c_class>::find_voronoi_cell(double x,double y,double z,int ci,
 	// Update mask value and initialize queue
 	mv++;
 	if(mv==0) {reset_mask();mv=1;}
-	int *qu_s=qu,*qu_e=qu;
+	int64_t *qu_s=qu,*qu_e=qu;
 
 	while(g<wl_seq_length-1) {
 
@@ -233,8 +233,8 @@ void voro_compute<c_class>::find_voronoi_cell(double x,double y,double z,int ci,
  * \param[in] (ei,ej,ek) the block to consider.
  * \param[in,out] qu_e a pointer to the end of the queue. */
 template<class c_class>
-inline void voro_compute<c_class>::add_to_mask(int ei,int ej,int ek,int *&qu_e) {
-	unsigned int *mijk=mask+ei+hx*(ej+hy*ek);
+inline void voro_compute<c_class>::add_to_mask(int64_t ei,int64_t ej,int64_t ek,int64_t *&qu_e) {
+	uint64_t *mijk=mask+ei+hx*(ej+hy*ek);
 	if(ek>0) if(*(mijk-hxy)!=mv) {if(qu_e==qu_l) qu_e=qu;*(mijk-hxy)=mv;*(qu_e++)=ei;*(qu_e++)=ej;*(qu_e++)=ek-1;}
 	if(ej>0) if(*(mijk-hx)!=mv) {if(qu_e==qu_l) qu_e=qu;*(mijk-hx)=mv;*(qu_e++)=ei;*(qu_e++)=ej-1;*(qu_e++)=ek;}
 	if(ei>0) if(*(mijk-1)!=mv) {if(qu_e==qu_l) qu_e=qu;*(mijk-1)=mv;*(qu_e++)=ei-1;*(qu_e++)=ej;*(qu_e++)=ek;}
@@ -247,8 +247,8 @@ inline void voro_compute<c_class>::add_to_mask(int ei,int ej,int ek,int *&qu_e) 
  * \param[in] (ei,ej,ek) the block to consider.
  * \param[in,out] qu_e a pointer to the end of the queue. */
 template<class c_class>
-inline void voro_compute<c_class>::scan_bits_mask_add(unsigned int q,unsigned int *mijk,int ei,int ej,int ek,int *&qu_e) {
-	const unsigned int b1=1<<21,b2=1<<22,b3=1<<24,b4=1<<25,b5=1<<27,b6=1<<28;
+inline void voro_compute<c_class>::scan_bits_mask_add(uint64_t q,uint64_t *mijk,int64_t ei,int64_t ej,int64_t ek,int64_t *&qu_e) {
+	const uint64_t b1=1<<21,b2=1<<22,b3=1<<24,b4=1<<25,b5=1<<27,b6=1<<28;
 	if((q&b2)==b2) {
 		if(ei>0) {*(mijk-1)=mv;*(qu_e++)=ei-1;*(qu_e++)=ej;*(qu_e++)=ek;}
 		if((q&b1)==0&&ei<hx-1) {*(mijk+1)=mv;*(qu_e++)=ei+1;*(qu_e++)=ej;*(qu_e++)=ek;}
@@ -288,13 +288,13 @@ inline void voro_compute<c_class>::scan_bits_mask_add(unsigned int q,unsigned in
  *         computation and has zero volume, true otherwise. */
 template<class c_class>
 template<class v_cell>
-bool voro_compute<c_class>::compute_cell(v_cell &c,int ijk,int s,int ci,int cj,int ck) {
-	static const int count_list[8]={7,11,15,19,26,35,45,59},*count_e=count_list+8;
+bool voro_compute<c_class>::compute_cell(v_cell &c,int64_t ijk,int64_t s,int64_t ci,int64_t cj,int64_t ck) {
+	static const int64_t count_list[8]={7,11,15,19,26,35,45,59},*count_e=count_list+8;
 	double x,y,z,x1,y1,z1,qx=0,qy=0,qz=0;
 	double xlo,ylo,zlo,xhi,yhi,zhi,x2,y2,z2,rs;
-	int i,j,k,di,dj,dk,ei,ej,ek,f,g,l,disp;
+	int64_t i,j,k,di,dj,dk,ei,ej,ek,f,g,l,disp;
 	double fx,fy,fz,gxs,gys,gzs,*radp;
-	unsigned int q,*e,*mijk;
+	uint64_t q,*e,*mijk;
 
 	if(!con.initialize_voronoicell(c,ijk,s,ci,cj,ck,i,j,k,x,y,z,disp)) return false;
 	con.r_init(ijk,s);
@@ -302,7 +302,7 @@ bool voro_compute<c_class>::compute_cell(v_cell &c,int ijk,int s,int ci,int cj,i
 	// Initialize the Voronoi cell to fill the entire container
 	double crs,mrs;
 
-	int next_count=3,*count_p=(const_cast<int*> (count_list));
+	int64_t next_count=3,*count_p=(const_cast<int64_t*> (count_list));
 
 	// Test all particles in the particle's local region first
 	for(l=0;l<s;l++) {
@@ -330,9 +330,9 @@ bool voro_compute<c_class>::compute_cell(v_cell &c,int ijk,int s,int ci,int cj,i
 	// Now compute the fractional position of the particle within its
 	// region and store it in (fx,fy,fz). We use this to compute an index
 	// (di,dj,dk) of which subregion the particle is within.
-	unsigned int m1,m2;
+	uint64_t m1,m2;
 	con.frac_pos(x,y,z,ci,cj,ck,fx,fy,fz);
-	di=int(fx*xsp*wl_fgrid);dj=int(fy*ysp*wl_fgrid);dk=int(fz*zsp*wl_fgrid);
+	di=int64_t(fx*xsp*wl_fgrid);dj=int64_t(fy*ysp*wl_fgrid);dk=int64_t(fz*zsp*wl_fgrid);
 
 	// The indices (di,dj,dk) tell us which worklist to use, to test the
 	// blocks in the optimal order. But we only store worklists for the
@@ -359,7 +359,7 @@ bool voro_compute<c_class>::compute_cell(v_cell &c,int ijk,int s,int ci,int cj,i
 	// point at the right offsets
 	ijk=di+wl_hgrid*(dj+wl_hgrid*dk);
 	radp=mrad+ijk*wl_seq_length;
-	e=(const_cast<unsigned int*> (wl))+ijk*wl_seq_length;
+	e=(const_cast<uint64_t*> (wl))+ijk*wl_seq_length;
 
 	// Read in how many items in the worklist can be tested without having to
 	// worry about writing to the mask
@@ -444,7 +444,7 @@ bool voro_compute<c_class>::compute_cell(v_cell &c,int ijk,int s,int ci,int cj,i
 	if(mv==0) {reset_mask();mv=1;}
 
 	// Set the queue pointers
-	int *qu_s=qu,*qu_e=qu;
+	int64_t *qu_s=qu,*qu_e=qu;
 
 	while(g<wl_seq_length-1) {
 
@@ -794,7 +794,7 @@ inline bool voro_compute<c_class>::face_z_test(v_cell &c,double x0,double y0,dou
  * \return True if the region is further away than mrs, false if the region in
  *         within mrs. */
 template<class c_class>
-bool voro_compute<c_class>::compute_min_max_radius(int di,int dj,int dk,double fx,double fy,double fz,double gxs,double gys,double gzs,double &crs,double mrs) {
+bool voro_compute<c_class>::compute_min_max_radius(int64_t di,int64_t dj,int64_t dk,double fx,double fy,double fz,double gxs,double gys,double gzs,double &crs,double mrs) {
 	double xlo,ylo,zlo;
 	if(di>0) {
 		xlo=di*boxx-fx;
@@ -944,7 +944,7 @@ bool voro_compute<c_class>::compute_min_max_radius(int di,int dj,int dk,double f
 }
 
 template<class c_class>
-bool voro_compute<c_class>::compute_min_radius(int di,int dj,int dk,double fx,double fy,double fz,double mrs) {
+bool voro_compute<c_class>::compute_min_radius(int64_t di,int64_t dj,int64_t dk,double fx,double fy,double fz,double mrs) {
 	double t,crs;
 
 	if(di>0) {t=di*boxx-fx;crs=t*t;}
@@ -964,9 +964,9 @@ bool voro_compute<c_class>::compute_min_radius(int di,int dj,int dk,double fx,do
  * \param[in,out] qu_s a reference to the queue start pointer.
  * \param[in,out] qu_e a reference to the queue end pointer. */
 template<class c_class>
-inline void voro_compute<c_class>::add_list_memory(int*& qu_s,int*& qu_e) {
+inline void voro_compute<c_class>::add_list_memory(int64_t*& qu_s,int64_t*& qu_e) {
 	qu_size<<=1;
-	int *qu_n=new int[qu_size],*qu_c=qu_n;
+	int64_t *qu_n=new int64_t[qu_size],*qu_c=qu_n;
 #if VOROPP_VERBOSE >=2
 	fprintf(stderr,"List memory scaled up to %d\n",qu_size);
 #endif
@@ -984,23 +984,23 @@ inline void voro_compute<c_class>::add_list_memory(int*& qu_s,int*& qu_e) {
 }
 
 // Explicit template instantiation
-template voro_compute<container>::voro_compute(container&,int,int,int);
-template voro_compute<container_poly>::voro_compute(container_poly&,int,int,int);
-template bool voro_compute<container>::compute_cell(voronoicell&,int,int,int,int,int);
-template bool voro_compute<container>::compute_cell(voronoicell_neighbor&,int,int,int,int,int);
-template void voro_compute<container>::find_voronoi_cell(double,double,double,int,int,int,int,particle_record&,double&);
-template bool voro_compute<container_poly>::compute_cell(voronoicell&,int,int,int,int,int);
-template bool voro_compute<container_poly>::compute_cell(voronoicell_neighbor&,int,int,int,int,int);
-template void voro_compute<container_poly>::find_voronoi_cell(double,double,double,int,int,int,int,particle_record&,double&);
+template voro_compute<container>::voro_compute(container&,int64_t,int64_t,int64_t);
+template voro_compute<container_poly>::voro_compute(container_poly&,int64_t,int64_t,int64_t);
+template bool voro_compute<container>::compute_cell(voronoicell&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template bool voro_compute<container>::compute_cell(voronoicell_neighbor&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template void voro_compute<container>::find_voronoi_cell(double,double,double,int64_t,int64_t,int64_t,int64_t,particle_record&,double&);
+template bool voro_compute<container_poly>::compute_cell(voronoicell&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template bool voro_compute<container_poly>::compute_cell(voronoicell_neighbor&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template void voro_compute<container_poly>::find_voronoi_cell(double,double,double,int64_t,int64_t,int64_t,int64_t,particle_record&,double&);
 
 // Explicit template instantiation
-template voro_compute<container_periodic>::voro_compute(container_periodic&,int,int,int);
-template voro_compute<container_periodic_poly>::voro_compute(container_periodic_poly&,int,int,int);
-template bool voro_compute<container_periodic>::compute_cell(voronoicell&,int,int,int,int,int);
-template bool voro_compute<container_periodic>::compute_cell(voronoicell_neighbor&,int,int,int,int,int);
-template void voro_compute<container_periodic>::find_voronoi_cell(double,double,double,int,int,int,int,particle_record&,double&);
-template bool voro_compute<container_periodic_poly>::compute_cell(voronoicell&,int,int,int,int,int);
-template bool voro_compute<container_periodic_poly>::compute_cell(voronoicell_neighbor&,int,int,int,int,int);
-template void voro_compute<container_periodic_poly>::find_voronoi_cell(double,double,double,int,int,int,int,particle_record&,double&);
+template voro_compute<container_periodic>::voro_compute(container_periodic&,int64_t,int64_t,int64_t);
+template voro_compute<container_periodic_poly>::voro_compute(container_periodic_poly&,int64_t,int64_t,int64_t);
+template bool voro_compute<container_periodic>::compute_cell(voronoicell&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template bool voro_compute<container_periodic>::compute_cell(voronoicell_neighbor&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template void voro_compute<container_periodic>::find_voronoi_cell(double,double,double,int64_t,int64_t,int64_t,int64_t,particle_record&,double&);
+template bool voro_compute<container_periodic_poly>::compute_cell(voronoicell&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template bool voro_compute<container_periodic_poly>::compute_cell(voronoicell_neighbor&,int64_t,int64_t,int64_t,int64_t,int64_t);
+template void voro_compute<container_periodic_poly>::find_voronoi_cell(double,double,double,int64_t,int64_t,int64_t,int64_t,particle_record&,double&);
 
 }

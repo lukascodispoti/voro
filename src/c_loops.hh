@@ -37,19 +37,19 @@ enum c_loop_subset_mode {
 class particle_order {
 	public:
 		/** A pointer to the array holding the ordering. */
-		int *o;
+		int64_t *o;
 		/** A pointer to the next position in the ordering array in
 		 * which to store an entry. */
-		int *op;
+		int64_t *op;
 		/** The current memory allocation for the class, set to the
 		 * number of entries which can be stored. */
-		int size;
+		int64_t size;
 		/** The particle_order constructor allocates memory to store the
 		 * ordering information.
 		 * \param[in] init_size the initial amount of memory to
 		 *                      allocate. */
-		particle_order(int init_size=init_ordering_size)
-			: o(new int[init_size<<1]),op(o),size(init_size) {}
+		particle_order(int64_t init_size=init_ordering_size)
+			: o(new int64_t[init_size<<1]),op(o),size(init_size) {}
 		/** The particle_order destructor frees the dynamically allocated
 		 * memory used to store the ordering information. */
 		~particle_order() {
@@ -60,7 +60,7 @@ class particle_order {
 		 * \param[in] ijk the block into which the particle was placed.
 		 * \param[in] q the position within the block where the
 		 * 		particle was placed. */
-		inline void add(int ijk,int q) {
+		inline void add(int64_t ijk,int64_t q) {
 			if(op==o+size) add_ordering_memory();
 			*(op++)=ijk;*(op++)=q;
 		}
@@ -78,45 +78,45 @@ class particle_order {
 class c_loop_base {
 	public:
 		/** The number of blocks in the x direction. */
-		const int nx;
+		const int64_t nx;
 		/** The number of blocks in the y direction. */
-		const int ny;
+		const int64_t ny;
 		/** The number of blocks in the z direction. */
-		const int nz;
+		const int64_t nz;
 		/** A constant, set to the value of nx multiplied by ny, which
 		 * is used in the routines that step through blocks in
 		 * sequence. */
-		const int nxy;
+		const int64_t nxy;
 		/** A constant, set to the value of nx*ny*nz, which is used in
 		 * the routines that step through blocks in sequence. */
-		const int nxyz;
+		const int64_t nxyz;
 		/** The number of floating point numbers per particle in the
 		 * associated container data structure. */
-		const int ps;
+		const int64_t ps;
 		/** A pointer to the particle position information in the
 		 * associated container data structure. */
 		double **p;
 		/** A pointer to the particle ID information in the associated
 		 * container data structure. */
-		int **id;
+		int64_t **id;
 		/** A pointer to the particle counts in the associated
 		 * container data structure. */
-		int *co;
+		int64_t *co;
 		/** The current x-index of the block under consideration by the
 		 * loop. */
-		int i;
+		int64_t i;
 		/** The current y-index of the block under consideration by the
 		 * loop. */
-		int j;
+		int64_t j;
 		/** The current z-index of the block under consideration by the
 		 * loop. */
-		int k;
+		int64_t k;
 		/** The current index of the block under consideration by the
 		 * loop. */
-		int ijk;
+		int64_t ijk;
 		/** The index of the particle under consideration within the current
 		 * block. */
-		int q;
+		int64_t q;
 		/** The constructor copies several necessary constants from the
 		 * base container class.
 		 * \param[in] con the container class to use. */
@@ -138,7 +138,7 @@ class c_loop_base {
 		 * \param[out] r the radius of the particle. If no radius
 		 * 		 information is available the default radius
 		 * 		 value is returned. */
-		inline void pos(int &pid,double &x,double &y,double &z,double &r) {
+		inline void pos(int64_t &pid,double &x,double &y,double &z,double &r) {
 			pid=id[ijk][q];
 			double *pp=p[ijk]+ps*q;
 			x=*(pp++);y=*(pp++);z=*pp;
@@ -155,7 +155,7 @@ class c_loop_base {
 		inline double z() {return p[ijk][ps*q+2];}
 		/** Returns the ID of the particle currently being considered
 		 * by the loop. */
-		inline int pid() {return id[ijk][q];}
+		inline int64_t pid() {return id[ijk][q];}
 };
 
 /** \brief Class for looping over all of the particles in a container.
@@ -230,7 +230,7 @@ class c_loop_subset : public c_loop_base {
 			xperiodic(con.xperiodic), yperiodic(con.yperiodic), zperiodic(con.zperiodic) {}
 		void setup_sphere(double vx,double vy,double vz,double r,bool bounds_test=true);
 		void setup_box(double xmin,double xmax,double ymin,double ymax,double zmin,double zmax,bool bounds_test=true);
-		void setup_intbox(int ai_,int bi_,int aj_,int bj_,int ak_,int bk_);
+		void setup_intbox(int64_t ai_,int64_t bi_,int64_t aj_,int64_t bj_,int64_t ak_,int64_t bk_);
 		bool start();
 		/** Finds the next particle to test.
 		 * \return True if there is another particle, false if no more
@@ -247,11 +247,11 @@ class c_loop_subset : public c_loop_base {
 		const bool xperiodic,yperiodic,zperiodic;
 		double px,py,pz,apx,apy,apz;
 		double v0,v1,v2,v3,v4,v5;
-		int ai,bi,aj,bj,ak,bk;
-		int ci,cj,ck,di,dj,dk,inc1,inc2;
-		inline int step_mod(int a,int b) {return a>=0?a%b:b-1-(b-1-a)%b;}
-		inline int step_div(int a,int b) {return a>=0?a/b:-1+(a+1)/b;}
-		inline int step_int(double a) {return a<0?int(a)-1:int(a);}
+		int64_t ai,bi,aj,bj,ak,bk;
+		int64_t ci,cj,ck,di,dj,dk,inc1,inc2;
+		inline int64_t step_mod(int64_t a,int64_t b) {return a>=0?a%b:b-1-(b-1-a)%b;}
+		inline int64_t step_div(int64_t a,int64_t b) {return a>=0?a/b:-1+(a+1)/b;}
+		inline int64_t step_int(double a) {return a<0?int64_t(a)-1:int64_t(a);}
 		void setup_common();
 		bool next_block();
 		bool out_of_bounds();
@@ -270,9 +270,9 @@ class c_loop_order : public c_loop_base {
 		/** A reference to the ordering class to use. */
 		particle_order &vo;
 		/** A pointer to the current position in the ordering class. */
-		int *cp;
+		int64_t *cp;
 		/** A pointer to the end position in the ordering class. */
-		int *op;
+		int64_t *op;
 		/** The constructor copies several necessary constants from the
 		 * base class, and sets up a reference to the ordering class to
 		 * use.
@@ -303,14 +303,14 @@ class c_loop_order : public c_loop_base {
 		}
 	private:
 		/** The number of computational blocks in the x direction. */
-		const int nx;
+		const int64_t nx;
 		/** The number of computational blocks in a z-slice. */
-		const int nxy;
+		const int64_t nxy;
 		/** Takes the current block index and computes indices in the
 		 * x, y, and z directions. */
 		inline void decode() {
 			k=ijk/nxy;
-			int ijkt=ijk-nxy*k;
+			int64_t ijkt=ijk-nxy*k;
 			j=ijkt/nx;
 			i=ijkt-j*nx;
 		}
@@ -358,22 +358,22 @@ class c_loop_all_periodic : public c_loop_base {
 	private:
 		/** The lower y index (inclusive) of the primary domain within
 		 * the block structure. */
-		int ey;
+		int64_t ey;
 		/** The lower y index (inclusive) of the primary domain within
 		 * the block structure. */
-		int ez;
+		int64_t ez;
 		/** The upper y index (exclusive) of the primary domain within
 		 * the block structure. */
-		int wy;
+		int64_t wy;
 		/** The upper z index (exclusive) of the primary domain within
 		 * the block structure. */
-		int wz;
+		int64_t wz;
 		/** The index of the (0,0,0) block within the block structure.
 		 */
-		int ijk0;
+		int64_t ijk0;
 		/** A value to increase ijk by when the z index is increased.
 		 */
-		int inc2;
+		int64_t inc2;
 		/** Updates the internal variables to find the next
 		 * computational block with any particles.
 		 * \return True if another block is found, false if there are
@@ -405,9 +405,9 @@ class c_loop_order_periodic : public c_loop_base {
 		/** A reference to the ordering class to use. */
 		particle_order &vo;
 		/** A pointer to the current position in the ordering class. */
-		int *cp;
+		int64_t *cp;
 		/** A pointer to the end position in the ordering class. */
-		int *op;
+		int64_t *op;
 		/** The constructor copies several necessary constants from the
 		 * base class, and sets up a reference to the ordering class to
 		 * use.
@@ -438,14 +438,14 @@ class c_loop_order_periodic : public c_loop_base {
 		}
 	private:
 		/** The number of computational blocks in the x direction. */
-		const int nx;
+		const int64_t nx;
 		/** The number of computational blocks in a z-slice. */
-		const int oxy;
+		const int64_t oxy;
 		/** Takes the current block index and computes indices in the
 		 * x, y, and z directions. */
 		inline void decode() {
 			k=ijk/oxy;
-			int ijkt=ijk-oxy*k;
+			int64_t ijkt=ijk-oxy*k;
 			j=ijkt/nx;
 			i=ijkt-j*nx;
 		}

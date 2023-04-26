@@ -28,24 +28,24 @@ namespace voro {
  * \param[in] ps_ the number of floating point entries to store for each
  *                particle. */
 container_base::container_base(double ax_,double bx_,double ay_,double by_,double az_,double bz_,
-		int nx_,int ny_,int nz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int init_mem,int ps_)
+		int64_t nx_,int64_t ny_,int64_t nz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int64_t init_mem,int64_t ps_)
 	: voro_base(nx_,ny_,nz_,(bx_-ax_)/nx_,(by_-ay_)/ny_,(bz_-az_)/nz_),
 	ax(ax_), bx(bx_), ay(ay_), by(by_), az(az_), bz(bz_),
 	max_len_sq((bx-ax)*(bx-ax)*(xperiodic_?0.25:1)+(by-ay)*(by-ay)*(yperiodic_?0.25:1)
 		  +(bz-az)*(bz-az)*(zperiodic_?0.25:1)),
 	xperiodic(xperiodic_), yperiodic(yperiodic_), zperiodic(zperiodic_),
-	id(new int*[nxyz]), p(new double*[nxyz]), co(new int[nxyz]), mem(new int[nxyz]), ps(ps_) {
+	id(new int64_t*[nxyz]), p(new double*[nxyz]), co(new int64_t[nxyz]), mem(new int64_t[nxyz]), ps(ps_) {
 
-	int l;
+	int64_t l;
 	for(l=0;l<nxyz;l++) co[l]=0;
 	for(l=0;l<nxyz;l++) mem[l]=init_mem;
-	for(l=0;l<nxyz;l++) id[l]=new int[init_mem];
+	for(l=0;l<nxyz;l++) id[l]=new int64_t[init_mem];
 	for(l=0;l<nxyz;l++) p[l]=new double[ps*init_mem];
 }
 
 /** The container destructor frees the dynamically allocated memory. */
 container_base::~container_base() {
-	int l;
+	int64_t l;
 	for(l=0;l<nxyz;l++) delete [] p[l];
 	for(l=0;l<nxyz;l++) delete [] id[l];
 	delete [] id;
@@ -65,7 +65,7 @@ container_base::~container_base() {
  *                                               coordinate direction.
  * \param[in] init_mem the initial memory allocation for each block. */
 container::container(double ax_,double bx_,double ay_,double by_,double az_,double bz_,
-	int nx_,int ny_,int nz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int init_mem)
+	int64_t nx_,int64_t ny_,int64_t nz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int64_t init_mem)
 	: container_base(ax_,bx_,ay_,by_,az_,bz_,nx_,ny_,nz_,xperiodic_,yperiodic_,zperiodic_,init_mem,3),
 	vc(*this,xperiodic_?2*nx_+1:nx_,yperiodic_?2*ny_+1:ny_,zperiodic_?2*nz_+1:nz_) {}
 
@@ -80,15 +80,15 @@ container::container(double ax_,double bx_,double ay_,double by_,double az_,doub
  *                                               coordinate direction.
  * \param[in] init_mem the initial memory allocation for each block. */
 container_poly::container_poly(double ax_,double bx_,double ay_,double by_,double az_,double bz_,
-	int nx_,int ny_,int nz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int init_mem)
+	int64_t nx_,int64_t ny_,int64_t nz_,bool xperiodic_,bool yperiodic_,bool zperiodic_,int64_t init_mem)
 	: container_base(ax_,bx_,ay_,by_,az_,bz_,nx_,ny_,nz_,xperiodic_,yperiodic_,zperiodic_,init_mem,4),
 	vc(*this,xperiodic_?2*nx_+1:nx_,yperiodic_?2*ny_+1:ny_,zperiodic_?2*nz_+1:nz_) {ppr=p;}
 
 /** Put a particle into the correct region of the container.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container::put(int n,double x,double y,double z) {
-	int ijk;
+void container::put(int64_t n,double x,double y,double z) {
+	int64_t ijk;
 	if(put_locate_block(ijk,x,y,z)) {
 		id[ijk][co[ijk]]=n;
 		double *pp=p[ijk]+3*co[ijk]++;
@@ -100,8 +100,8 @@ void container::put(int n,double x,double y,double z) {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly::put(int n,double x,double y,double z,double r) {
-	int ijk;
+void container_poly::put(int64_t n,double x,double y,double z,double r) {
+	int64_t ijk;
 	if(put_locate_block(ijk,x,y,z)) {
 		id[ijk][co[ijk]]=n;
 		double *pp=p[ijk]+4*co[ijk]++;
@@ -115,8 +115,8 @@ void container_poly::put(int n,double x,double y,double z,double r) {
  * \param[in] vo the ordering class in which to record the region.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container::put(particle_order &vo,int n,double x,double y,double z) {
-	int ijk;
+void container::put(particle_order &vo,int64_t n,double x,double y,double z) {
+	int64_t ijk;
 	if(put_locate_block(ijk,x,y,z)) {
 		id[ijk][co[ijk]]=n;
 		vo.add(ijk,co[ijk]);
@@ -131,8 +131,8 @@ void container::put(particle_order &vo,int n,double x,double y,double z) {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly::put(particle_order &vo,int n,double x,double y,double z,double r) {
-	int ijk;
+void container_poly::put(particle_order &vo,int64_t n,double x,double y,double z,double r) {
+	int64_t ijk;
 	if(put_locate_block(ijk,x,y,z)) {
 		id[ijk][co[ijk]]=n;
 		vo.add(ijk,co[ijk]);
@@ -151,7 +151,7 @@ void container_poly::put(particle_order &vo,int n,double x,double y,double z,dou
  *                        domain if necessary.
  * \return True if the particle can be successfully placed into the container,
  * false otherwise. */
-bool container_base::put_locate_block(int &ijk,double &x,double &y,double &z) {
+bool container_base::put_locate_block(int64_t &ijk,double &x,double &y,double &z) {
 	if(put_remap(ijk,x,y,z)) {
 		if(co[ijk]==mem[ijk]) add_particle_memory(ijk);
 		return true;
@@ -171,18 +171,18 @@ bool container_base::put_locate_block(int &ijk,double &x,double &y,double &z) {
  *                        domain if necessary.
  * \return True if the particle can be successfully placed into the container,
  * false otherwise. */
-inline bool container_base::put_remap(int &ijk,double &x,double &y,double &z) {
-	int l;
+inline bool container_base::put_remap(int64_t &ijk,double &x,double &y,double &z) {
+	int64_t l;
 
 	ijk=step_int((x-ax)*xsp);
 	if(xperiodic) {l=step_mod(ijk,nx);x+=boxx*(l-ijk);ijk=l;}
 	else if(ijk<0||ijk>=nx) return false;
 
-	int j=step_int((y-ay)*ysp);
+	int64_t j=step_int((y-ay)*ysp);
 	if(yperiodic) {l=step_mod(j,ny);y+=boxy*(l-j);j=l;}
 	else if(j<0||j>=ny) return false;
 
-	int k=step_int((z-az)*zsp);
+	int64_t k=step_int((z-az)*zsp);
 	if(zperiodic) {l=step_mod(k,nz);z+=boxz*(l-k);k=l;}
 	else if(k<0||k>=nz) return false;
 
@@ -200,7 +200,7 @@ inline bool container_base::put_remap(int &ijk,double &x,double &y,double &z) {
  * \param[out] ijk the block index that the vector is within.
  * \return True if the particle is within the container or can be remapped into
  * it, false if it lies outside of the container bounds. */
-inline bool container_base::remap(int &ai,int &aj,int &ak,int &ci,int &cj,int &ck,double &x,double &y,double &z,int &ijk) {
+inline bool container_base::remap(int64_t &ai,int64_t &aj,int64_t &ak,int64_t &ci,int64_t &cj,int64_t &ck,double &x,double &y,double &z,int64_t &ijk) {
 	ci=step_int((x-ax)*xsp);
 	if(ci<0||ci>=nx) {
 		if(xperiodic) {ai=step_div(ci,nx);x-=ai*(bx-ax);ci-=ai*nx;}
@@ -234,8 +234,8 @@ inline bool container_base::remap(int &ai,int &aj,int &ak,int &ci,int &cj,int &c
  * \param[out] pid the ID of the particle.
  * \return True if a particle was found. If the container has no particles,
  * then the search will not find a Voronoi cell and false is returned. */
-bool container::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid) {
-	int ai,aj,ak,ci,cj,ck,ijk;
+bool container::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int64_t &pid) {
+	int64_t ai,aj,ak,ci,cj,ck,ijk;
 	particle_record w;
 	double mrs;
 
@@ -272,8 +272,8 @@ bool container::find_voronoi_cell(double x,double y,double z,double &rx,double &
  * \param[out] pid the ID of the particle.
  * \return True if a particle was found. If the container has no particles,
  * then the search will not find a Voronoi cell and false is returned. */
-bool container_poly::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid) {
-	int ai,aj,ak,ci,cj,ck,ijk;
+bool container_poly::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int64_t &pid) {
+	int64_t ai,aj,ak,ci,cj,ck,ijk;
 	particle_record w;
 	double mrs;
 
@@ -302,8 +302,8 @@ bool container_poly::find_voronoi_cell(double x,double y,double z,double &rx,dou
 
 /** Increase memory for a particular region.
  * \param[in] i the index of the region to reallocate. */
-void container_base::add_particle_memory(int i) {
-	int l,nmem=mem[i]<<1;
+void container_base::add_particle_memory(int64_t i) {
+	int64_t l,nmem=mem[i]<<1;
 
 	// Carry out a check on the memory allocation size, and
 	// print a status message if requested
@@ -314,7 +314,7 @@ void container_base::add_particle_memory(int i) {
 #endif
 
 	// Allocate new memory and copy in the contents of the old arrays
-	int *idp=new int[nmem];
+	int64_t *idp=new int64_t[nmem];
 	for(l=0;l<co[i];l++) idp[l]=id[i][l];
 	double *pp=new double[ps*nmem];
 	for(l=0;l<ps*co[i];l++) pp[l]=p[i][l];
@@ -331,7 +331,7 @@ void container_base::add_particle_memory(int i) {
  * causes a fatal error.
  * \param[in] fp the file handle to read from. */
 void container::import(FILE *fp) {
-	int i,j;
+	int64_t i,j;
 	double x,y,z;
 	while((j=fscanf(fp,"%d %lg %lg %lg",&i,&x,&y,&z))==4) put(i,x,y,z);
 	if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -344,7 +344,7 @@ void container::import(FILE *fp) {
  * \param[in,out] vo a reference to an ordering class to use.
  * \param[in] fp the file handle to read from. */
 void container::import(particle_order &vo,FILE *fp) {
-	int i,j;
+	int64_t i,j;
 	double x,y,z;
 	while((j=fscanf(fp,"%d %lg %lg %lg",&i,&x,&y,&z))==4) put(vo,i,x,y,z);
 	if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -356,7 +356,7 @@ void container::import(particle_order &vo,FILE *fp) {
  * routine causes a fatal error.
  * \param[in] fp the file handle to read from. */
 void container_poly::import(FILE *fp) {
-	int i,j;
+	int64_t i,j;
 	double x,y,z,r;
 	while((j=fscanf(fp,"%d %lg %lg %lg %lg",&i,&x,&y,&z,&r))==5) put(i,x,y,z,r);
 	if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -369,7 +369,7 @@ void container_poly::import(FILE *fp) {
  * \param[in,out] vo a reference to an ordering class to use.
  * \param[in] fp the file handle to read from. */
 void container_poly::import(particle_order &vo,FILE *fp) {
-	int i,j;
+	int64_t i,j;
 	double x,y,z,r;
 	while((j=fscanf(fp,"%d %lg %lg %lg %lg",&i,&x,&y,&z,&r))==5) put(vo,i,x,y,z,r);
 	if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -378,20 +378,20 @@ void container_poly::import(particle_order &vo,FILE *fp) {
 /** Outputs the a list of all the container regions along with the number of
  * particles stored within each. */
 void container_base::region_count() {
-	int i,j,k,*cop=co;
+	int64_t i,j,k,*cop=co;
 	for(k=0;k<nz;k++) for(j=0;j<ny;j++) for(i=0;i<nx;i++)
 		printf("Region (%d,%d,%d): %d particles\n",i,j,k,*(cop++));
 }
 
 /** Clears a container of particles. */
 void container::clear() {
-	for(int *cop=co;cop<co+nxyz;cop++) *cop=0;
+	for(int64_t *cop=co;cop<co+nxyz;cop++) *cop=0;
 }
 
 /** Clears a container of particles, also clearing resetting the maximum radius
  * to zero. */
 void container_poly::clear() {
-	for(int *cop=co;cop<co+nxyz;cop++) *cop=0;
+	for(int64_t *cop=co;cop<co+nxyz;cop++) *cop=0;
 	max_radius=0;
 }
 
