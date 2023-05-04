@@ -4,6 +4,15 @@
 # Load the common configuration file
 include ../config.mk
 
+ifndef $(EULER)
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	EULER = 0
+else
+	EULER = 1
+endif
+endif
+
 ifeq ($(EULER), 0)
 	CXX = g++-12 -fopenmp
 else
