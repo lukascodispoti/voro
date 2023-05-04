@@ -1,0 +1,12 @@
+.DS_Store
+.vscode/
+.compile_commands.json
+.cache/
+build/
+examples
+*.o
+*.a
+include/voro++/*.hh
+bin/
+man/man1/voro++.1
+src/voro++

@@ -33,19 +33,32 @@ install:
 	$(INSTALL) $(IFLAGS) man/voro++.1 $(PREFIX)/man/man1
 	$(INSTALL) $(IFLAGS) src/libvoro++.a $(PREFIX)/lib
 	$(INSTALL) $(IFLAGS) src/voro++.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/c_loops.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/cell.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/c_loops.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/cell.hh $(PREFIX)/include/voro++
 	$(INSTALL) $(IFLAGS) src/common.hh $(PREFIX)/include/voro++
 	$(INSTALL) $(IFLAGS) src/config.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/container.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/container_prd.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/container.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/container_prd.hh $(PREFIX)/include/voro++
 	$(INSTALL) $(IFLAGS) src/rad_option.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/pre_container.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/pre_container.hh $(PREFIX)/include/voro++
 	$(INSTALL) $(IFLAGS) src/unitcell.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/v_base.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/v_compute.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/v_base.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/v_compute.hh $(PREFIX)/include/voro++
 	$(INSTALL) $(IFLAGS) src/wall.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/worklist.hh $(PREFIX)/include/voro++
+#	$(INSTALL) $(IFLAGS) src/worklist.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/cell_2d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/cell_3d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/container_3d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/container_2d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/particle_order.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/v_base_2d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/v_base_3d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/worklist_3d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/worklist_2d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/v_compute_2d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/v_compute_3d.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/container_tri.hh $(PREFIX)/include/voro++
+	$(INSTALL) $(IFLAGS) src/*.hh $(PREFIX)/include/voro++
 
 # Uninstall the executable, man page, and shared library
 uninstall:
