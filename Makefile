@@ -5,20 +5,14 @@
 .PHONY: all help clean install uninstall
 
 include config.mk
-
+ 
 # Build all of the executable files
 all:
-	$(MAKE) -C src
-# $(MAKE) -C examples
-
-# Build the help files (with Doxygen)
-help:
-# $(MAKE) -C src help
+	$(MAKE) EULER=$(EULER) -C src
 
 # Clean up the executable files
 clean:
 	$(MAKE) -C src clean
-# $(MAKE) -C examples clean
 
 # Install the executable, man page, and shared library
 install:
@@ -32,32 +26,6 @@ install:
 	$(INSTALL) $(IFLAGS_EXEC) src/voro++ $(PREFIX)/bin
 	$(INSTALL) $(IFLAGS) man/voro++.1 $(PREFIX)/man/man1
 	$(INSTALL) $(IFLAGS) src/libvoro++.a $(PREFIX)/lib
-	$(INSTALL) $(IFLAGS) src/voro++.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/c_loops.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/cell.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/common.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/config.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/container.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/container_prd.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/rad_option.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/pre_container.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/unitcell.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/v_base.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/v_compute.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/wall.hh $(PREFIX)/include/voro++
-#	$(INSTALL) $(IFLAGS) src/worklist.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/cell_2d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/cell_3d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/container_3d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/container_2d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/particle_order.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/v_base_2d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/v_base_3d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/worklist_3d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/worklist_2d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/v_compute_2d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/v_compute_3d.hh $(PREFIX)/include/voro++
-	$(INSTALL) $(IFLAGS) src/container_tri.hh $(PREFIX)/include/voro++
 	$(INSTALL) $(IFLAGS) src/*.hh $(PREFIX)/include/voro++
 
 # Uninstall the executable, man page, and shared library
@@ -79,4 +47,4 @@ uninstall:
 	rm -f $(PREFIX)/include/voro++/v_compute.hh
 	rm -f $(PREFIX)/include/voro++/wall.hh
 	rm -f $(PREFIX)/include/voro++/worklist.hh
-	rmdir -f $(PREFIX)/include/voro++
+	rm -r -f $(PREFIX)/include/voro++
