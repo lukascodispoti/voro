@@ -9,16 +9,16 @@ include config.mk
 # Build all of the executable files
 all:
 	$(MAKE) -C src
-	$(MAKE) -C examples
+# $(MAKE) -C examples
 
 # Build the help files (with Doxygen)
 help:
-	$(MAKE) -C src help
+# $(MAKE) -C src help
 
 # Clean up the executable files
 clean:
 	$(MAKE) -C src clean
-	$(MAKE) -C examples clean
+# $(MAKE) -C examples clean
 
 # Install the executable, man page, and shared library
 install:
@@ -79,4 +79,4 @@ uninstall:
 	rm -f $(PREFIX)/include/voro++/v_compute.hh
 	rm -f $(PREFIX)/include/voro++/wall.hh
 	rm -f $(PREFIX)/include/voro++/worklist.hh
-	rmdir $(PREFIX)/include/voro++
+	rmdir -f $(PREFIX)/include/voro++

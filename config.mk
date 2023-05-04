@@ -15,7 +15,7 @@ E_INC=-I../../src
 E_LIB=-L../../src
 
 # Installation directory
-PREFIX?=/usr/local
+PREFIX?=.
 
 # Install command
 INSTALL=install

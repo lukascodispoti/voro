@@ -6,7 +6,8 @@ build/
 examples
 *.o
 *.a
-include/voro++/*.hh
+# include/voro++/*.hh
 bin/
 man/man1/voro++.1
+# src/voro++
 src/voro++
