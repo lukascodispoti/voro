@@ -66,7 +66,7 @@ class voro_compute_3d {
         const int ps;
         /** This array holds the numerical IDs of each particle in each
          * computational box. */
-        int **id;
+        uint64_t **id;
         /** A two dimensional array holding particle positions. For the derived
          * container_poly class, this also holds particle radii. */
         double **p;

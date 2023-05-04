@@ -34,14 +34,14 @@ container_base_3d::container_base_3d(double ax_,double bx_,double ay_,double by_
     ax(ax_), bx(bx_), ay(ay_), by(by_), az(az_), bz(bz_),
     max_len_sq((bx-ax)*(bx-ax)*(x_prd_?0.25:1)+(by-ay)*(by-ay)*(y_prd_?0.25:1)
           +(bz-az)*(bz-az)*(z_prd_?0.25:1)),
-    x_prd(x_prd_), y_prd(y_prd_), z_prd(z_prd_), id(new int*[nxyz]),
+    x_prd(x_prd_), y_prd(y_prd_), z_prd(z_prd_), id(new uint64_t*[nxyz]),
     p(new double*[nxyz]), co(new int[nxyz]), mem(new int[nxyz]), ps(ps_),
     nt(nt_), oflow_co(0), oflow_mem(init_overflow_size),
     ijk_m_id_oflow(new int[3*oflow_mem]), p_oflow(new double[ps*oflow_mem]) {
     int l;
     for(l=0;l<nxyz;l++) co[l]=0;
     for(l=0;l<nxyz;l++) mem[l]=init_mem;
-    for(l=0;l<nxyz;l++) id[l]=new int[init_mem];
+    for(l=0;l<nxyz;l++) id[l]=new uint64_t[init_mem];
     for(l=0;l<nxyz;l++) p[l]=new double[ps*init_mem];
 }
 
@@ -499,7 +499,7 @@ inline bool container_base_3d::remap(int &ai,int &aj,int &ak,int &ci,int &cj,int
  * \param[out] pid the ID of the particle.
  * \return True if a particle was found. If the container has no particles,
  * then the search will not find a Voronoi cell and false is returned. */
-bool container_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid) {
+bool container_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,uint64_t &pid) {
     int ai,aj,ak,ci,cj,ck,ijk;
     particle_record_3d w;
     double mrs;
@@ -538,7 +538,7 @@ bool container_3d::find_voronoi_cell(double x,double y,double z,double &rx,doubl
  * \param[out] pid the ID of the particle.
  * \return True if a particle was found. If the container has no particles,
  * then the search will not find a Voronoi cell and false is returned. */
-bool container_poly_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid) {
+bool container_poly_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,uint64_t &pid) {
     int ai,aj,ak,ci,cj,ck,ijk;
     particle_record_3d w;
     double mrs;
@@ -582,7 +582,7 @@ void container_base_3d::add_particle_memory(int i,int m) {
 #endif
 
     // Allocate new memory and copy in the contents of the old arrays
-    int *idp=new int[mem[i]];
+    uint64_t *idp=new uint64_t[mem[i]];
     memcpy(idp,id[i],sizeof(int)*omem);
     delete [] id[i];id[i]=idp;
     double *pp=new double[ps*mem[i]];
@@ -718,7 +718,7 @@ void container_3d::draw_particles(FILE *fp) {
     for(iterator cli=begin();cli<end();cli++) {
         int ijk=cli->ijk,q=cli->q;
         double *pp=p[ijk]+3*q;
-        fprintf(fp,"%d %g %g %g\n",id[ijk][q],*pp,pp[1],pp[2]);
+        fprintf(fp,"%zu %g %g %g\n", (size_t)id[ijk][q],*pp,pp[1],pp[2]);
     }
 }
 
@@ -728,8 +728,8 @@ void container_3d::draw_particles_pov(FILE *fp) {
     for(iterator cli=begin();cli<end();cli++) {
         int ijk=cli->ijk,q=cli->q;
         double *pp=p[ijk]+3*q;
-        fprintf(fp,"// id %d\nsphere{<%g,%g,%g>,s}\n",
-                id[ijk][q],*pp,pp[1],pp[2]);
+        fprintf(fp,"// id %zu\nsphere{<%g,%g,%g>,s}\n",
+                (size_t)id[ijk][q],*pp,pp[1],pp[2]);
     }
 }
 

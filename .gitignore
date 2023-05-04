@@ -11,3 +11,4 @@ bin/
 man/man1/voro++.1
 # src/voro++
 src/voro++
+html/

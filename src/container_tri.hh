@@ -60,7 +60,7 @@ class container_triclinic_base : public unitcell,  public voro_base_3d {
         int oxyz;
         /** This array holds the numerical IDs of each particle in each
          * computational box. */
-        int **id;
+        uint64_t **id;
         /** A two-dimensional array holding particle positions. For the derived
          * container_poly class, this also holds particle radii. */
         double **p;
@@ -92,7 +92,8 @@ class container_triclinic_base : public unitcell,  public voro_base_3d {
         inline void print_all_particles() {
             int ijk,q;
             for(ijk=0;ijk<oxyz;ijk++) for(q=0;q<co[ijk];q++)
-                printf("%d %g %g %g\n",id[ijk][q],p[ijk][ps*q],p[ijk][ps*q+1],p[ijk][ps*q+2]);
+                    printf("%llu %g %g %g\n", id[ijk][q], p[ijk][ps * q],
+                           p[ijk][ps * q + 1], p[ijk][ps * q + 2]);
         }
         void region_count();
         /** Initializes the Voronoi cell prior to a compute_cell operation for

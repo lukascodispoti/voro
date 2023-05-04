@@ -124,7 +124,7 @@ class subset_info_3d {
         int nxyz;
         int ps;
         double **p;
-        int **id;
+        uint64_t **id;
         int *co;
         double apx,apy,apz;
         void setup_sphere(double vx,double vy,double vz,double r,bool bounds_test=true);

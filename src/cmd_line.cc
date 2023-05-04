@@ -167,7 +167,7 @@ inline void fclosec(FILE *fp) {
 }
 
 template<class v_class,class i_class>
-inline void cell_output(v_class &c,i_class &cli,const int ps,double** conp,int **conid,const char* format,FILE* out_file,FILE* gnu_file,FILE* povp_file,FILE* povv_file) {
+inline void cell_output(v_class &c,i_class &cli,const int ps,double** conp,uint64_t **conid,const char* format,FILE* out_file,FILE* gnu_file,FILE* povp_file,FILE* povv_file) {
     int ijk=cli->ijk,q=cli->q,pid=conid[ijk][q];
     double *pp=conp[ijk]+ps*q,x=*pp,y=pp[1],z=pp[2],r=ps==4?pp[3]:0.5;
     if(out_file!=NULL) c.output_custom(format,pid,x,y,z,r,out_file);
@@ -188,7 +188,7 @@ inline void cell_output(v_class &c,i_class &cli,const int ps,double** conp,int *
 template<class c_class,class v_class>
 void cmd_line_output(c_class &con,v_class &c,const char* format,FILE* out_file,FILE* gnu_file,FILE* povp_file,FILE* povv_file,bool verbose,double &vol,int &vcc,int &tp) {
     container_base_3d::iterator cli;
-    double **conp=con.p;int **conid=con.id;
+    double **conp=con.p;uint64_t **conid=con.id;
     for(cli=con.begin();cli<con.end();cli++) if(con.compute_cell(c,cli)) {
         cell_output(c,cli,con.ps,conp,conid,format,out_file,gnu_file,povp_file,povv_file);
         if(verbose) {vol+=c.volume();vcc++;}
@@ -201,7 +201,7 @@ void cmd_line_output(c_class &con,v_class &c,const char* format,FILE* out_file,F
 template<class c_class,class v_class>
 void cmd_line_output(particle_order vo,c_class &con,v_class &c,const char* format,FILE* out_file,FILE* gnu_file,FILE* povp_file,FILE* povv_file,bool verbose,double &vol,int &vcc,int &tp) {
     container_base_3d::iterator_order cli;
-    double **conp=con.p;int **conid=con.id;
+    double **conp=con.p;uint64_t **conid=con.id;
     for(cli=con.begin(vo);cli<con.end(vo);cli++) if(con.compute_cell(c,cli)) {
         cell_output(c,cli,con.ps,conp,conid,format,out_file,gnu_file,povp_file,povv_file);
         if(verbose) {vol+=c.volume();vcc++;}
