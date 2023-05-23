@@ -4,6 +4,21 @@
 # Load the common configuration file
 include ../config.mk
 
+ifndef $(EULER)
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	EULER = 0
+else
+	EULER = 1
+endif
+endif
+
+ifeq ($(EULER), 0)
+	CXX = g++-12 -fopenmp
+else
+	CXX = g++ -fopenmp
+endif
+
 # List of the common source files
 objs=cell_2d.o cell_3d.o common.o container_2d.o container_3d.o \
 	 container_tri.o iter_2d.o iter_3d.o particle_list.o unitcell.o \
