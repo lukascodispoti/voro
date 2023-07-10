@@ -7,9 +7,10 @@
 #ifndef VOROPP_PARTICLE_ORDER_HH
 #define VOROPP_PARTICLE_ORDER_HH
 
-#include <cstring>
-
 #include <stdio.h>
+
+#include <cstring>
+#include <inttypes.h>
 
 #include "config.hh"
 
@@ -28,53 +29,54 @@ namespace voro {
  * specifically loop over the particles that have their information stored
  * within it. */
 class particle_order {
-    public:
-        /** A pointer to the array holding the ordering. */
-        int *o;
-        /** A pointer to the next position in the ordering array in which to
-         * store an entry. */
-        int *op;
-        /** The current memory allocation for the class, set to the number of
-         * entries which can be stored. */
-        int size;
-        /** The particle_order constructor allocates memory to store the
-         * ordering information.
-         * \param[in] init_size the initial amount of memory to
-         *                      allocate. */
-        particle_order(int init_size=init_ordering_size)
-            : o(new int[init_size<<1]),op(o),size(init_size) {}
-        /** The particle_order destructor frees the dynamically allocated
-         * memory used to store the ordering information. */
-        ~particle_order() {
-            delete [] o;
-        }
-        /** Adds a record to the order, corresponding to the memory address of
-         * where a particle was placed into the container.
-         * \param[in] ijk the block into which the particle was placed.
-         * \param[in] q the position within the block where the particle was
-         *              placed. */
-        inline void add(int ijk,int q) {
-            if(op==o+size) add_ordering_memory();
-            *(op++)=ijk;*(op++)=q;
-        }
-    private:
-        inline void add_ordering_memory() {
-            /*
-            int *no=new int[size*4];
-            memcpy(no,o,2*sizeof(int)*size);
-            delete [] o;
-            size<<=1;
-            o=no;op=o+size;
-            */
+   public:
+    /** A pointer to the array holding the ordering. */
+    uint64_t *o;
+    /** A pointer to the next position in the ordering array in which to
+     * store an entry. */
+    uint64_t *op;
+    /** The current memory allocation for the class, set to the number of
+     * entries which can be stored. */
+    uint64_t size;
+    /** The particle_order constructor allocates memory to store the
+     * ordering information.
+     * \param[in] init_size the initial amount of memory to
+     *                      allocate. */
+    particle_order(uint64_t init_size = init_ordering_size)
+        : o(new uint64_t[init_size << 1]), op(o), size(init_size) {}
+    /** The particle_order destructor frees the dynamically allocated
+     * memory used to store the ordering information. */
+    ~particle_order() { delete[] o; }
+    /** Adds a record to the order, corresponding to the memory address of
+     * where a particle was placed into the container.
+     * \param[in] ijk the block into which the particle was placed.
+     * \param[in] q the position within the block where the particle was
+     *              placed. */
+    inline void add(uint64_t ijk, uint64_t q) {
+        if (op == o + size) add_ordering_memory();
+        *(op++) = ijk;
+        *(op++) = q;
+    }
 
-            int *no=new int[size<<2],*nop=no,*opp=o;
-            while(opp<op) *(nop++)=*(opp++);
-            delete [] o;
-            size<<=1;o=no;op=nop;
-        }
+   private:
+    inline void add_ordering_memory() {
+        /*
+        uint64_t *no=new uint64_t[size*4];
+        memcpy(no,o,2*sizeof(uint64_t)*size);
+        delete [] o;
+        size<<=1;
+        o=no;op=o+size;
+        */
 
+        uint64_t *no = new uint64_t[size << 2], *nop = no, *opp = o;
+        while (opp < op) *(nop++) = *(opp++);
+        delete[] o;
+        size <<= 1;
+        o = no;
+        op = nop;
+    }
 };
 
-}
+}  // namespace voro
 
 #endif

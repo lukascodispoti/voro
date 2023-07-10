@@ -255,8 +255,8 @@ class container_base_3d::iterator_order : public std::iterator<std::random_acces
         typedef typename std::iterator<std::random_access_iterator_tag,c_info,int>::reference reference;
         typedef typename std::iterator<std::random_access_iterator_tag,c_info,int>::difference_type difference_type;
         c_info ptr;
-        int* cp_iter;
-        int* op_iter;
+        uint64_t* cp_iter;
+        uint64_t* op_iter;
         int ptr_n;
         int pn_upper_bound; //(op_iter-cp_iter)/2, ie. number of particles; ptr_n< than this number to be in range
         int nxyz;
@@ -451,7 +451,7 @@ class container_triclinic_base::iterator_order : public std::iterator<std::rando
 {
 public:
     c_info ptr;
-    int* cp_iter;
+    uint64_t* cp_iter;
     int ptr_n;
 
     friend class container_triclinic_base;
