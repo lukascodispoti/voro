@@ -165,7 +165,7 @@ void container_poly_3d::change_number_thread(int nt_) {
 /** Put a particle into the correct region of the container.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container_3d::put(int n,double x,double y,double z) {
+void container_3d::put(uint64_t n,double x,double y,double z) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -179,7 +179,7 @@ void container_3d::put(int n,double x,double y,double z) {
  * no space available for immediate storage.
  * \param[in] i the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container_3d::put_parallel(int i,double x,double y,double z) {
+void container_3d::put_parallel(uint64_t i,double x,double y,double z) {
     int ijk;
 
     // Locate the particle that the block is in
@@ -209,6 +209,7 @@ void container_3d::put_parallel(int i,double x,double y,double z) {
                 *idp=ijk;idp[1]=m;idp[2]=i;
                 double *pp=p_oflow+3*oflow_co++;
                 *pp=x;pp[1]=y;pp[2]=z;
+                // id[ijk][m]=-1-oflow_co;
             }
         }
     }
@@ -280,7 +281,7 @@ void container_3d::put_reconcile_overflow() {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly_3d::put(int n,double x,double y,double z,double r) {
+void container_poly_3d::put(uint64_t n,double x,double y,double z,double r) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -294,7 +295,7 @@ void container_poly_3d::put(int n,double x,double y,double z,double r) {
  * \param[in] i the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly_3d::put_parallel(int i,double x,double y,double z,double r) {
+void container_poly_3d::put_parallel(uint64_t i,double x,double y,double z,double r) {
     int ijk;
 
     // Locate the particle that the block is in
@@ -380,7 +381,7 @@ void container_poly_3d::put_reconcile_overflow() {
  * \param[in] vo the ordering class in which to record the region.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container_3d::put(particle_order &vo,int n,double x,double y,double z) {
+void container_3d::put(particle_order &vo, uint64_t n,double x,double y,double z) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -396,7 +397,7 @@ void container_3d::put(particle_order &vo,int n,double x,double y,double z) {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly_3d::put(particle_order &vo,int n,double x,double y,double z,double r) {
+void container_poly_3d::put(particle_order &vo,uint64_t n,double x,double y,double z,double r) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
