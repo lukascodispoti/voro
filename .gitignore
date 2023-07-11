@@ -6,6 +6,7 @@ build/
 examples
 *.o
 *.a
+*.dSYM
 # include/voro++/*.hh
 bin/
 man/man1/voro++.1

@@ -66,7 +66,7 @@ class container_base_3d : public voro_base_3d, public wall_list_3d {
         const bool z_prd;
         /** This array holds the numerical IDs of each particle in each
          * computational box. */
-        int **id;
+        uint64_t **id;
         /** A two dimensional array holding particle positions. For the derived
          * container_poly class, this also holds particle radii. */
         double **p;
@@ -205,7 +205,7 @@ class container_base_3d : public voro_base_3d, public wall_list_3d {
          * \param[in] c_iter_3d cli a reference to the iterator class.
          * \return The particle ID. */
         template<class c_iter_3d>
-        inline int pid(c_iter_3d &cli) {
+        inline uint64_t pid(c_iter_3d &cli) {
             return id[cli->ijk][cli->q];
         }
         friend class iterator;
@@ -253,9 +253,9 @@ class container_3d : public container_base_3d, public radius_mono {
         ~container_3d();
         void change_number_thread(int nt_);
         void clear();
-        void put(int i,double x,double y,double z);
-        void put_parallel(int i,double x,double y,double z);
-        void put(particle_order &vo,int n,double x,double y,double z);
+        void put(uint64_t i,double x,double y,double z);
+        void put_parallel(uint64_t i,double x,double y,double z);
+        void put(particle_order &vo,uint64_t n,double x,double y,double z);
         void put_reconcile_overflow();
         void add_parallel(double *pt_list,int num,int nt_);
         void import(FILE *fp=stdin);
@@ -327,7 +327,7 @@ class container_3d : public container_base_3d, public radius_mono {
             print_custom(format,fp);
             fclose(fp);
         }
-        bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid);
+        bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,uint64_t &pid);
         /** Computes the Voronoi cell for given particle.
          * \param[out] c a Voronoi cell class in which to store the computed
          *               cell.
@@ -393,9 +393,9 @@ class container_poly_3d : public container_base_3d, public radius_poly_3d {
         ~container_poly_3d();
         void change_number_thread(int nt_);
         void clear();
-        void put(int i,double x,double y,double z,double r);
-        void put_parallel(int i,double x,double y,double z,double r);
-        void put(particle_order &vo,int n,double x,double y,double z,double r);
+        void put(uint64_t i,double x,double y,double z,double r);
+        void put_parallel(uint64_t i,double x,double y,double z,double r);
+        void put(particle_order &vo,uint64_t n,double x,double y,double z,double r);
         void put_reconcile_overflow();
         void add_parallel(double *pt_list,int num,int nt_);
         void import(FILE *fp=stdin);
@@ -515,7 +515,7 @@ class container_poly_3d : public container_base_3d, public radius_poly_3d {
             }
             return false;
         }
-        bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid);
+        bool find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,uint64_t &pid);
     private:
         /** An array of pointers to Voronoi computation objects for use by the
          * different threads. */

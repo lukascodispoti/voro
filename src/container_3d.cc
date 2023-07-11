@@ -34,14 +34,14 @@ container_base_3d::container_base_3d(double ax_,double bx_,double ay_,double by_
     ax(ax_), bx(bx_), ay(ay_), by(by_), az(az_), bz(bz_),
     max_len_sq((bx-ax)*(bx-ax)*(x_prd_?0.25:1)+(by-ay)*(by-ay)*(y_prd_?0.25:1)
           +(bz-az)*(bz-az)*(z_prd_?0.25:1)),
-    x_prd(x_prd_), y_prd(y_prd_), z_prd(z_prd_), id(new int*[nxyz]),
+    x_prd(x_prd_), y_prd(y_prd_), z_prd(z_prd_), id(new uint64_t*[nxyz]),
     p(new double*[nxyz]), co(new int[nxyz]), mem(new int[nxyz]), ps(ps_),
     nt(nt_), oflow_co(0), oflow_mem(init_overflow_size),
     ijk_m_id_oflow(new int[3*oflow_mem]), p_oflow(new double[ps*oflow_mem]) {
     int l;
     for(l=0;l<nxyz;l++) co[l]=0;
     for(l=0;l<nxyz;l++) mem[l]=init_mem;
-    for(l=0;l<nxyz;l++) id[l]=new int[init_mem];
+    for(l=0;l<nxyz;l++) id[l]=new uint64_t[init_mem];
     for(l=0;l<nxyz;l++) p[l]=new double[ps*init_mem];
 }
 
@@ -165,7 +165,7 @@ void container_poly_3d::change_number_thread(int nt_) {
 /** Put a particle into the correct region of the container.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container_3d::put(int n,double x,double y,double z) {
+void container_3d::put(uint64_t n,double x,double y,double z) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -179,7 +179,7 @@ void container_3d::put(int n,double x,double y,double z) {
  * no space available for immediate storage.
  * \param[in] i the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container_3d::put_parallel(int i,double x,double y,double z) {
+void container_3d::put_parallel(uint64_t i,double x,double y,double z) {
     int ijk;
 
     // Locate the particle that the block is in
@@ -280,7 +280,7 @@ void container_3d::put_reconcile_overflow() {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly_3d::put(int n,double x,double y,double z,double r) {
+void container_poly_3d::put(uint64_t n,double x,double y,double z,double r) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -294,7 +294,7 @@ void container_poly_3d::put(int n,double x,double y,double z,double r) {
  * \param[in] i the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly_3d::put_parallel(int i,double x,double y,double z,double r) {
+void container_poly_3d::put_parallel(uint64_t i,double x,double y,double z,double r) {
     int ijk;
 
     // Locate the particle that the block is in
@@ -380,7 +380,7 @@ void container_poly_3d::put_reconcile_overflow() {
  * \param[in] vo the ordering class in which to record the region.
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle. */
-void container_3d::put(particle_order &vo,int n,double x,double y,double z) {
+void container_3d::put(particle_order &vo,uint64_t n,double x,double y,double z) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -396,7 +396,7 @@ void container_3d::put(particle_order &vo,int n,double x,double y,double z) {
  * \param[in] n the numerical ID of the inserted particle.
  * \param[in] (x,y,z) the position vector of the inserted particle.
  * \param[in] r the radius of the particle. */
-void container_poly_3d::put(particle_order &vo,int n,double x,double y,double z,double r) {
+void container_poly_3d::put(particle_order &vo,uint64_t n,double x,double y,double z,double r) {
     int ijk;
     if(put_locate_block(ijk,x,y,z)) {
         id[ijk][co[ijk]]=n;
@@ -499,7 +499,7 @@ inline bool container_base_3d::remap(int &ai,int &aj,int &ak,int &ci,int &cj,int
  * \param[out] pid the ID of the particle.
  * \return True if a particle was found. If the container has no particles,
  * then the search will not find a Voronoi cell and false is returned. */
-bool container_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid) {
+bool container_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,uint64_t &pid) {
     int ai,aj,ak,ci,cj,ck,ijk;
     particle_record_3d w;
     double mrs;
@@ -538,7 +538,7 @@ bool container_3d::find_voronoi_cell(double x,double y,double z,double &rx,doubl
  * \param[out] pid the ID of the particle.
  * \return True if a particle was found. If the container has no particles,
  * then the search will not find a Voronoi cell and false is returned. */
-bool container_poly_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,int &pid) {
+bool container_poly_3d::find_voronoi_cell(double x,double y,double z,double &rx,double &ry,double &rz,uint64_t &pid) {
     int ai,aj,ak,ci,cj,ck,ijk;
     particle_record_3d w;
     double mrs;
@@ -582,8 +582,8 @@ void container_base_3d::add_particle_memory(int i,int m) {
 #endif
 
     // Allocate new memory and copy in the contents of the old arrays
-    int *idp=new int[mem[i]];
-    memcpy(idp,id[i],sizeof(int)*omem);
+    uint64_t *idp=new uint64_t[mem[i]];
+    memcpy(idp,id[i],sizeof(uint64_t)*omem);
     delete [] id[i];id[i]=idp;
     double *pp=new double[ps*mem[i]];
     memcpy(pp,p[i],ps*sizeof(double)*omem);
@@ -596,7 +596,8 @@ void container_base_3d::add_particle_memory(int i,int m) {
  * causes a fatal error.
  * \param[in] fp the file handle to read from. */
 void container_3d::import(FILE *fp) {
-    int i,j;
+    int j;
+    uint64_t i;
     double x,y,z;
     while((j=fscanf(fp,"%d %lg %lg %lg",&i,&x,&y,&z))==4) {put(i,x,y,z);}
     if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -609,7 +610,8 @@ void container_3d::import(FILE *fp) {
  * \param[in,out] vo a reference to an ordering class to use.
  * \param[in] fp the file handle to read from. */
 void container_3d::import(particle_order &vo,FILE *fp) {
-    int i,j;
+    int j;
+    uint64_t i;
     double x,y,z;
     while((j=fscanf(fp,"%d %lg %lg %lg",&i,&x,&y,&z))==4) put(vo,i,x,y,z);
     if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -621,7 +623,8 @@ void container_3d::import(particle_order &vo,FILE *fp) {
  * routine causes a fatal error.
  * \param[in] fp the file handle to read from. */
 void container_poly_3d::import(FILE *fp) {
-    int i,j;
+    int j;
+    uint64_t i;
     double x,y,z,r;
     while((j=fscanf(fp,"%d %lg %lg %lg %lg",&i,&x,&y,&z,&r))==5) {put(i,x,y,z,r);}
     if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);
@@ -634,7 +637,8 @@ void container_poly_3d::import(FILE *fp) {
  * \param[in,out] vo a reference to an ordering class to use.
  * \param[in] fp the file handle to read from. */
 void container_poly_3d::import(particle_order &vo,FILE *fp) {
-    int i,j;
+    int j;
+    uint64_t i;
     double x,y,z,r;
     while((j=fscanf(fp,"%d %lg %lg %lg %lg",&i,&x,&y,&z,&r))==5) put(vo,i,x,y,z,r);
     if(j!=EOF) voro_fatal_error("File import error",VOROPP_FILE_ERROR);

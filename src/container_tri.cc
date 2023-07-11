@@ -33,7 +33,7 @@ container_triclinic_base::container_triclinic_base(double bx_,double bxy_,double
     : unitcell(bx_,bxy_,by_,bxz_,byz_,bz_),
     voro_base_3d(nx_,ny_,nz_,bx_/nx_,by_/ny_,bz_/nz_), max_len_sq(unit_voro.max_radius_squared()),
     ey(int(max_uv_y*ysp+1)), ez(int(max_uv_z*zsp+1)), wy(ny+ey), wz(nz+ez),
-    oy(ny+2*ey), oz(nz+2*ez), oxyz(nx*oy*oz), id(new int*[oxyz]), p(new double*[oxyz]),
+    oy(ny+2*ey), oz(nz+2*ez), oxyz(nx*oy*oz), id(new uint64_t*[oxyz]), p(new double*[oxyz]),
     co(new int[oxyz]), mem(new int[oxyz]), img(new char[oxyz]), init_mem(init_mem_), ps(ps_),
     nt(nt_), oflow_co(0), oflow_mem(init_overflow_size),
     ijk_m_id_oflow(new int[3*oflow_mem]), p_oflow(new double[ps*oflow_mem])  {
@@ -48,7 +48,7 @@ container_triclinic_base::container_triclinic_base(double bx_,double bxy_,double
     for(k=ez;k<wz;k++) for(j=ey;j<wy;j++) for(i=0;i<nx;i++) {
         l=i+nx*(j+oy*k);
         mem[l]=init_mem;
-        id[l]=new int[init_mem];
+        id[l]=new uint64_t[init_mem];
         p[l]=new double[ps*init_mem];
     }
 
@@ -635,7 +635,7 @@ void container_triclinic_base::add_particle_memory(int i,int m) {
         while(m>=mem[i]) mem[i]<<=1;
         if(mem[i]>max_particle_memory)
             voro_fatal_error("Absolute maximum memory allocation exceeded",VOROPP_MEMORY_ERROR);
-        id[i]=new int[init_mem];
+        id[i]=new uint64_t[init_mem];
         p[i]=new double[ps*init_mem];
         return;
     }
@@ -652,8 +652,8 @@ void container_triclinic_base::add_particle_memory(int i,int m) {
 #endif
 
     // Allocate new memory and copy in the contents of the old arrays
-    int *idp=new int[mem[i]];
-    memcpy(idp,id[i],sizeof(int)*omem);
+    uint64_t *idp=new uint64_t[mem[i]];
+    memcpy(idp,id[i],sizeof(uint64_t)*omem);
     double *pp=new double[ps*mem[i]];
     memcpy(pp,p[i],ps*sizeof(double)*omem);
 
