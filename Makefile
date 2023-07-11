@@ -4,8 +4,17 @@
 # Tell GNU Make that these are phony targets
 .PHONY: all help clean install uninstall
 
-include config.mk
- 
+ifndef $(EULER)
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	EULER = 0
+else
+	EULER = 1
+endif
+endif
+
+include config.mk 
+
 # Build all of the executable files
 all:
 	$(MAKE) EULER=$(EULER) -C src

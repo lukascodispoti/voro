@@ -14,7 +14,7 @@ endif
 endif
 
 ifeq ($(EULER), 0)
-	CXX = g++-12 -fopenmp
+	CXX = g++-13 -fopenmp
 else
 	CXX = g++ -fopenmp
 endif

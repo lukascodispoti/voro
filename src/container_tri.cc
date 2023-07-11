@@ -648,7 +648,7 @@ void container_triclinic_base::add_particle_memory(int i,int m) {
     if(mem[i]>max_particle_memory)
         voro_fatal_error("Absolute maximum memory allocation exceeded",VOROPP_MEMORY_ERROR);
 #if VOROPP_VERBOSE >=3
-    fprintf(stderr,"Particle memory in region %d scaled up to %d\n",i,nmem);
+    fprintf(stderr,"Particle memory in region %d scaled up to %d\n",i,mem[i]);
 #endif
 
     // Allocate new memory and copy in the contents of the old arrays
