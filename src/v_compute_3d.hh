@@ -10,6 +10,7 @@
 #include "config.hh"
 #include "worklist_3d.hh"
 #include "cell_3d.hh"
+#include <inttypes.h>
 
 namespace voro {
 
