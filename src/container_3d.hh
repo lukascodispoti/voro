@@ -186,9 +186,10 @@ class container_base_3d : public voro_base_3d, public wall_list_3d {
         }
         /** Sums up the total number of stored particles.
          * \return The number of particles. */
-        inline int total_particles() {
-            int tp=*co;
-            for(int *cop=co+1;cop<co+nxyz;cop++) tp+=*cop;
+        inline uint64_t total_particles() {
+            uint64_t tp=*co;
+            for (int *cop = co + 1; cop < co + nxyz; cop++)
+                tp += (uint64_t)*cop;
             return tp;
         }
         /** Gets the position of the particle currently pointed at by an

@@ -8,8 +8,12 @@
 
 
 # Flags for the C++ compiler
-CFLAGS+=-Wall -ansi -pedantic -O3
+CFLAGS+=-Wall -ansi -O3
+# CFLAGS+=-pedantic
 CFLAGS+=-Wformat=0
+CFLAGS+=-g
+CFLAGS+=-Wno-c++11-extensions
+CFLAGS+=-Wno-deprecated
 
 # Relative include and library paths for compilation of the examples
 E_INC=-I../../src
