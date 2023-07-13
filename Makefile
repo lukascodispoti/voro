@@ -13,11 +13,28 @@ else
 endif
 endif
 
-include config.mk 
+CFLAGS  = -Wall -DEULER=$(EULER)
+CFLAGS += -mtune=generic -march=native -std=c++11
+LDFLAGS = -lhdf5 -lm 
+ifeq ($(EULER), 0)
+  CC       = clang++ -fopenmp
+  CFLAGS  += -Wno-deprecated
+  CFLAGS  += -ansi 
+  CFLAGS  += -Wformat=0
+  CFLAGS  += -Wno-c++11-extensions
+  CFLAGS  += -Wno-deprecated
+  CFLAGS  += -Ofast
+else
+  CC       = g++ -fopenmp
+  CFLAGS  += -Ofast -D_GNU_SOURCE 
+endif
+
+
+# include config.mk 
 
 # Build all of the executable files
 all:
-	$(MAKE) EULER=$(EULER) -C src
+	$(MAKE) EULER=$(EULER) CC="$(CC)" CFLAGS="$(CFLAGS)" -C src
 
 # Clean up the executable files
 clean:

@@ -13,11 +13,7 @@ else
 endif
 endif
 
-ifeq ($(EULER), 0)
-	CXX = clang++ -fopenmp
-else
-	CXX = g++ -fopenmp
-endif
+CXX = $(CC)
 
 # List of the common source files
 objs=cell_2d.o cell_3d.o common.o container_2d.o container_3d.o \
