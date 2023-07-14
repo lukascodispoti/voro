@@ -30,7 +30,7 @@ voro_compute_3d<c_class>::voro_compute_3d(c_class &con_, int hx_, int hy_,
       hy(hy_),
       hz(hz_),
       hxy(hx_ * hy_),
-      hxyz((uint64_t)hxy * hz_),
+      hxyz((uint32_t)hxy * hz_),
       ps(con_.ps),
       id(con_.id),
       p(con_.p),
@@ -40,7 +40,7 @@ voro_compute_3d<c_class>::voro_compute_3d(c_class &con_, int hx_, int hy_,
       qu_size(3 * (3 + hxy + hz * (hx + hy))),
       wl(con_.wl),
       mrad(con_.mrad),
-      mask(new uint64_t[hxyz]),
+      mask(new uint32_t[hxyz]),
       qu(new int[qu_size]),
       qu_l(qu + qu_size) {
     reset_mask();
@@ -89,7 +89,7 @@ void voro_compute_3d<c_class>::find_voronoi_cell(double x,double y,double z,int 
     int i,j,k,di,dj,dk,ei,ej,ek,f,g,disp;
     double fx,fy,fz,mxs,mys,mzs,*radp;
     unsigned int q,*e;
-    uint64_t *mijk;
+    uint32_t *mijk;
 
     // Init setup for parameters to return
     w.ijk=-1;mrs=large_number;
@@ -249,7 +249,7 @@ void voro_compute_3d<c_class>::find_voronoi_cell(double x,double y,double z,int 
  * \param[in,out] qu_e a pointer to the end of the queue. */
 template<class c_class>
 inline void voro_compute_3d<c_class>::add_to_mask(int ei,int ej,int ek,int *&qu_e) {
-    uint64_t *mijk=mask+ei+hx*(ej+hy*ek);
+    uint32_t *mijk=mask+ei+hx*(ej+hy*ek);
     if(ek>0) if(*(mijk-hxy)!=mv) {if(qu_e==qu_l) qu_e=qu;*(mijk-hxy)=mv;*(qu_e++)=ei;*(qu_e++)=ej;*(qu_e++)=ek-1;}
     if(ej>0) if(*(mijk-hx)!=mv) {if(qu_e==qu_l) qu_e=qu;*(mijk-hx)=mv;*(qu_e++)=ei;*(qu_e++)=ej-1;*(qu_e++)=ek;}
     if(ei>0) if(*(mijk-1)!=mv) {if(qu_e==qu_l) qu_e=qu;*(mijk-1)=mv;*(qu_e++)=ei-1;*(qu_e++)=ej;*(qu_e++)=ek;}
@@ -262,7 +262,7 @@ inline void voro_compute_3d<c_class>::add_to_mask(int ei,int ej,int ek,int *&qu_
  * \param[in] (ei,ej,ek) the block to consider.
  * \param[in,out] qu_e a pointer to the end of the queue. */
 template<class c_class>
-inline void voro_compute_3d<c_class>::scan_bits_mask_add(unsigned int q,uint64_t *mijk,int ei,int ej,int ek,int *&qu_e) {
+inline void voro_compute_3d<c_class>::scan_bits_mask_add(unsigned int q,uint32_t *mijk,int ei,int ej,int ek,int *&qu_e) {
     const unsigned int b1=1<<21,b2=1<<22,b3=1<<24,b4=1<<25,b5=1<<27,b6=1<<28;
     if((q&b2)==b2) {
         if(ei>0) {*(mijk-1)=mv;*(qu_e++)=ei-1;*(qu_e++)=ej;*(qu_e++)=ek;}
@@ -310,7 +310,7 @@ bool voro_compute_3d<c_class>::compute_cell(v_cell &c,int ijk,int s,int ci,int c
     int i,j,k,di,dj,dk,ei,ej,ek,f,g,l,disp;
     double fx,fy,fz,gxs,gys,gzs,*radp;
     unsigned int q,*e;
-    uint64_t *mijk;
+    uint32_t *mijk;
     double r_rad,r_mul,r_val;
 
     if(!con.initialize_voronoicell(c,ijk,s,ci,cj,ck,i,j,k,x,y,z,disp)) return false;
