@@ -257,16 +257,23 @@ class container_base_3d::iterator_order : public std::iterator<std::random_acces
         c_info ptr;
         uint64_t* cp_iter;
         uint64_t* op_iter;
-        int ptr_n;
-        int pn_upper_bound; //(op_iter-cp_iter)/2, ie. number of particles; ptr_n< than this number to be in range
+        uint64_t ptr_n;
+        uint64_t pn_upper_bound; //(op_iter-cp_iter)/2, ie. number of particles; ptr_n< than this number to be in range
         int nxyz;
         iterator_order(){}
         /** Initializes the iterator.
          * \param[in] vo_ a reference to the particle_order class to follow. */
-        iterator_order(particle_order& vo_, int _nxyz) : cp_iter(vo_.o), op_iter(vo_.op), ptr_n(0), pn_upper_bound((op_iter-cp_iter)/2),
-        nxyz(_nxyz)
-        {
-            if(pn_upper_bound!=0){ptr.set(cp_iter[0],cp_iter[1]);} else{ptr.set(nxyz,0);} //if empty particle_order, set to one over the end
+        iterator_order(particle_order& vo_, int _nxyz)
+            : cp_iter(vo_.o),
+              op_iter(vo_.op),
+              ptr_n(0),
+              pn_upper_bound((op_iter - cp_iter) / 2),
+              nxyz(_nxyz) {
+            if (pn_upper_bound != 0) {
+                ptr.set(cp_iter[0], cp_iter[1]);
+            } else {
+                ptr.set(nxyz, 0);
+            }  // if empty particle_order, set to one over the end
         }
         /** Initializes the iterator, and sets it to point at a given particle.
          * \param[in] vo_ a reference to the particle_order class to follow.

@@ -750,7 +750,7 @@ container_base_3d::iterator_order& container_base_3d::iterator_order::operator-=
  * \param[in] incre the number of elements to offset by. */
 c_info& container_base_3d::iterator_order::operator[](const difference_type& incre) const {
     static c_info ci;
-    int ci_n=ptr_n+incre;
+    uint64_t ci_n=ptr_n+incre;
     if(ci_n>=0 && ci_n<pn_upper_bound){ci.set(cp_iter[2*ci_n],cp_iter[2*ci_n+1]);}
     else if(ci_n<0){ci.set(0,-1);} //out of range, return 1-before-the-start
     else{ci.set(nxyz,0);} //out of range, return 1-over-the-last

@@ -2348,7 +2348,7 @@ bool voronoicell_base_3d::p_i_search(double x,double y,double z,double l,int &lp
     }
 
     // Reset markers and return false
-    flip(lp);
+    flip(lp); 
     while(stackp>ds) flip(*(--stackp));
     return false;
 }
